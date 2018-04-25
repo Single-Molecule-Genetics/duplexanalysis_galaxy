@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="fsd" name="Duplex Sequencing Analysis:" version="0.0.1">
+    <requirements>
+        <requirement type="package" version="1.4">matplotlib</requirement>
+    </requirements>
+    <description>Family size distribution of tags</description>
+    <command interpreter="python">
+        FSD.py $file1 --inputName1 $file1.name --inputFile2 $file2 --inputName2 $file2.name --inputFile3 $file3 --inputName3 $file3.name --inputFile4 $file4 --inputName4 $file4.name --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+    </command>
+    <inputs>
+        <param name="file1" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>
+        <param name="file2" type="data" format="tabular" label="Dataset 2: input tags" optional="true"  />
+        <param name="file3" type="data" format="tabular" label="Dataset 3: input tags" optional="true" />
+        <param name="file4" type="data" format="tabular" label="Dataset 4: input tags" optional="true"  help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Name of the files can have max. 34 charcters, blanks are not allowed!"/>
+        <param name="separator" type="text" label="Separator of the CSV file." help="can be a single character" value=","/>
+    </inputs>
+    <outputs>
+        <data name="output_pdf" format="pdf" />
+        <data name="output_csv" format="csv"/>
+    </outputs>
+    <help> <![CDATA[
+
+**What it does**
+        
+    This tool will create a distribution of family sizes of each tag, which is separated after families tags that have only the forward (ab) strand, the reverse (ba) strand or both strands (ab+ba) of the DCS and a family size distribution without separation is created. If multiple files are provided as input, the family size distribution without separation contains all datasets in one plot and for each dataset a distribution with separation after single ab, ba strands and DCSs is produced.
+               
+        
+**Input**
+        
+    This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands. 
+    
+    **!!! Name of the files can have max. 34 charcters, blanks are not allowed !!!**
+    
+    +-----+----------------------------+----+
+    | 1   | AAAAAAAAAAAATGTTGGAATCTT   | ba |
+    +-----+----------------------------+----+
+    | 10  | AAAAAAAAAAAGGCGGTCCACCCC   | ab |
+    +-----+----------------------------+----+
+    | 28  | AAAAAAAAAAATGGTATGGACCGA   | ab |
+    +-----+----------------------------+----+
+    
+    
+     
+    
+      
+**Output**
+        
+    The output is a PDF file with the plot and a CSV with the data of the plot.
+        
+        
+**About Author**
+        
+    Author: Monika Heinzl
+    
+    Department: Institute of Bioinformatics, Johannes Kepler University Linz, Austria
+    
+    Contact: monika.heinzl@edumail.at
+        
+        ]]> 
+
+    </help>
+</tool>
