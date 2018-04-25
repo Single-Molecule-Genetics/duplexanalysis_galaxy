@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="fsd_regions" name="Duplex Sequencing Analysis:" version="0.0.1">
+    <requirements>
+        <requirement type="package" version="1.4">matplotlib</requirement>
+    </requirements>
+    <description>Family size distribution of aligned tags to reference genome</description>
+    <command interpreter="python">
+        FSD_regions.py $file1 --inputName1 $file1.name $file2 --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+    </command>
+    <inputs>
+        <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Blanks in the filenames are not allowed!"/>
+        <param name="file2" type="data" format="txt" label="Dataset 2: input tags aligned to the reference genome" help="Input in txt format with the regions and the tags, which were aligned to the reference genome. Blanks in the filenames are not allowed!"/>
+        <param name="separator" type="text" label="Separator of the CSV file." help="can be a single character" value=","/>
+    </inputs>
+    <outputs>
+        <data name="output_pdf" format="pdf" />
+        <data name="output_csv" format="csv"/>
+    </outputs>
+    <help> <![CDATA[
+
+**What it does**
+        
+    This tool will create a distribution of family sizes of all tags, which were aligned to the reference genome. The distribution is separated after the regions of the reference genome.
+               
+        
+**Input**
+
+    **!!! Blanks in the filenames are not allowed !!!**
+        
+    This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands. 
+    
+    +-----+----------------------------+----+
+    | 1   | AAAAAAAAAAAATGTTGGAATCTT   | ba |
+    +-----+----------------------------+----+
+    | 10  | AAAAAAAAAAAGGCGGTCCACCCC   | ab |
+    +-----+----------------------------+----+
+    | 28  | AAAAAAAAAAATGGTATGGACCGA   | ab |
+    +-----+----------------------------+----+
+    
+    In addition, a TXT file with the regions and all tags that were aligned to the reference genome is required. This file can obtained from a different tool.
+    
+    +-----------+------------------------------+
+    | 87_636    | AAATCAAAGTATGAATGAAGTTGCCT   |
+    +-----------+------------------------------+
+    | 87_636    | AAATTCATAGCATTAATTTCAACGGG   |
+    +-----------+------------------------------+
+    | 656_1143  | GGGGCAGCCATATTGGCAATTATCAT   |
+    +-----------+------------------------------+
+    
+**Output**
+        
+    The output is a PDF file with the plot and a CSV with the data of the plot.
+        
+        
+**About Author**
+        
+    Author: Monika Heinzl
+    
+    Department: Institute of Bioinformatics, Johannes Kepler University Linz, Austria
+    
+    Contact: monika.heinzl@edumail.at
+        
+        ]]> 
+
+    </help>
+</tool>

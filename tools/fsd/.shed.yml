@@ -1,0 +1,5 @@
+categories: [Graphics]
+description: fsd
+long_description: Tool that plots a histogram of sizes of read families
+name: fsd
+owner: mheinzl
