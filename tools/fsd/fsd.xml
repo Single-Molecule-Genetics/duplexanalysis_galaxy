@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="fsd" name="Duplex Sequencing Analysis:" version="0.0.1">
+<tool id="fsd" name="Duplex Sequencing Analysis:" version="0.0.2">
     <description>Family size distribution of tags</description>
     <requirements>
         <requirement type="package" version="1.4">matplotlib</requirement>
