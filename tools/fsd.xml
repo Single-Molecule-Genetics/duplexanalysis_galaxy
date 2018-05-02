@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tool id="fsd" name="Duplex Sequencing Analysis:" version="0.0.1">
+    <description>Family size distribution of tags</description>
     <requirements>
         <requirement type="package" version="1.4">matplotlib</requirement>
     </requirements>
-    <description>Family size distribution of tags</description>
-    <command interpreter="python">
-        FSD.py $file1 --inputName1 $file1.name --inputFile2 $file2 --inputName2 $file2.name --inputFile3 $file3 --inputName3 $file3.name --inputFile4 $file4 --inputName4 $file4.name --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+    
+    <command>
+        python FSD.py $file1 --inputName1 $file1.name --inputFile2 $file2 --inputName2 $file2.name --inputFile3 $file3 --inputName3 $file3.name --inputFile4 $file4 --inputName4 $file4.name --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>
@@ -18,6 +19,17 @@
         <data name="output_pdf" format="pdf" />
         <data name="output_csv" format="csv"/>
     </outputs>
+    <!--  <tests>
+        <test>
+            <param name="file1" value="Test_data.tabular"/>
+            <param name="file2" value="None"/>
+            <param name="file3" value="None"/>
+            <param name="file4" value="None"/>
+            <output name="output_pdf" file="output_file.pdf"/>
+            <output name="output_csv" file="output_file.csv"/>
+        </test>
+    </tests>
+    -->
     <help> <![CDATA[
 
 **What it does**
@@ -59,4 +71,13 @@
         ]]> 
 
     </help>
+    <citations>
+        <citation type="bibtex">
+            @misc{duplex,
+            author = {Heinzl, Monika},
+            year = {2018},
+            title = {Duplex analysis}
+         }
+        </citation>
+    </citations>
 </tool>
