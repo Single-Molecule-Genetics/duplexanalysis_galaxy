@@ -6,7 +6,7 @@
     </requirements>
     
     <command>
-        python FSD.py $file1 --inputName1 $file1.name --inputFile2 $file2 --inputName2 $file2.name --inputFile3 $file3 --inputName3 $file3.name --inputFile4 $file4 --inputName4 $file4.name --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+        python $__tool_directory__/fsd.py $file1 --inputName1 $file1.name --inputFile2 $file2 --inputName2 $file2.name --inputFile3 $file3 --inputName3 $file3.name --inputFile4 $file4 --inputName4 $file4.name --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>
