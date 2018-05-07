@@ -4,8 +4,8 @@
         <requirement type="package" version="1.4">matplotlib</requirement>
     </requirements>
     <description>Family size distribution of aligned tags to reference genome</description>
-    <command interpreter="python">
-        FSD_regions.py $file1 --inputName1 $file1.name $file2 --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+    <command>
+        python $__tool_directory__/fsd_regions.py $file1 --inputName1 $file1.name $file2 --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Blanks in the filenames are not allowed!"/>

@@ -6,8 +6,8 @@
         
     </requirements>
     <description>Family size distribution of tags from various steps of the Du Novo pipeline</description>
-    <command interpreter="python">
-        FSD_beforeVSafter.py $file1 $makeDCS --afterTrimming $afterTrimming --alignedTags $alignedTags --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+    <command>
+        python $__tool_directory__/fsd_beforevsafter.py $file1 $makeDCS --afterTrimming $afterTrimming --alignedTags $alignedTags --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Blanks in the filenames are not allowed!"/>
