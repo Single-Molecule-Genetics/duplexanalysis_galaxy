@@ -472,6 +472,10 @@ def Hamming_Distance_Analysis(argv):
                 # family size distribution of non-identical half
                 familySizeList1_diff_zeros, hammingDistances_diff_zeros, maximumXFS_diff_zeros, minimumXFS_diff_zeros = familySizeDistributionWithHD(
                     lst_minHD_tags_zeros, diff_zeros, diff=False, rel=False)
+            
+            ##########################       Plot HD within tags          ########################################################
+            ######################################################################################################################
+            plotHDwithinSeq_Sum2(HDhalf1, HDhalf2, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
 
             #####################################################################################################################
             ##################         plot Hamming Distance with Family size distribution         ##############################
@@ -508,10 +512,7 @@ def Hamming_Distance_Analysis(argv):
                            subtitle="Family size distribution with separation after delta Hamming distances within the tags",
                            relative=True, diff=True, title_file1=name_file)
 
-            ##########################       Plot HD within tags          ########################################################
-            ######################################################################################################################
-            plotHDwithinSeq_Sum2(HDhalf1, HDhalf2, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
-
+           
             # plots for chimeric reads
             if len(minHD_tags_zeros) != 0:
                 ## HD
