@@ -29,8 +29,8 @@ def readFileReferenceFree(file):
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Family Size Distribution of duplex sequencing data')
-  #  parser.add_argument('inputFile',
-   #                     help='Tabular File with three columns: ab or ba, tag and family size.')
+    parser.add_argument('--inputFile1',
+                        help='Tabular File with three columns: ab or ba, tag and family size.')
     parser.add_argument('--inputName1')
     parser.add_argument('--inputFile2',default=None,
                         help='Tabular File with three columns: ab or ba, tag and family size.')
@@ -53,9 +53,9 @@ def compare_read_families(argv):
     parser = make_argparser()
     args=parser.parse_args(argv[1:])
 
-    #firstFile = args.inputFile
+    firstFile = args.inputFile1
     name1 = args.inputName1
-    firstFile = args.inputName1
+    #firstFile = args.inputName1
     
     secondFile = args.inputFile2
     name2 = args.inputName2
