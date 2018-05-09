@@ -21,7 +21,6 @@ import argparse
 import sys
 import os
 import re
-from Cheetah.Template import Template
 
 def readFileReferenceFree(file):
     with open(file, 'r') as dest_f:
