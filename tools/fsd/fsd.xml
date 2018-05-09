@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- galaxy version 16.04 -->
-<tool id="fsd" name="Duplex Sequencing Analysis:" version="0.0.9">
+<tool id="fsd" name="Duplex Sequencing Analysis:" version="0.0.10">
     <description>Family size distribution (FSD) of tags</description>
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
@@ -8,7 +8,7 @@
     </requirements>
     
     <command>
-        python $__tool_directory__/fsd.py --inputFile1 "$file1" --inputName1 "$file1.name" --inputFile2 "$file2" --inputName2 "$file2.name" --inputFile3 "$file3" --inputName3 "$file3.name" --inputFile4 "$file4" --inputName4 "$file4.name" --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+        python2 $__tool_directory__/fsd.py --inputFile1 "$file1" --inputName1 "$file1.name" --inputFile2 "$file2" --inputName2 "$file2.name" --inputFile3 "$file3" --inputName3 "$file3.name" --inputFile4 "$file4" --inputName4 "$file4.name" --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>
