@@ -5,7 +5,7 @@
         <requirement type="package" version="1.70">biopython</requirement>
         
     </requirements>
-    <description>Family size distribution of tags from various steps of the Du Novo pipeline</description>
+    <description>Family size distribution (FSD) of tags from various steps of the Du Novo pipeline</description>
     <command>
         python $__tool_directory__/fsd_beforevsafter.py $file1 $makeDCS --afterTrimming $afterTrimming --alignedTags $alignedTags --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>

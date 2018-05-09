@@ -3,7 +3,7 @@
     <requirements>
         <requirement type="package" version="1.4">matplotlib</requirement>
     </requirements>
-    <description>Family size distribution of aligned tags to reference genome</description>
+    <description>Family size distribution (FSD) of aligned tags to reference genome</description>
     <command>
         python $__tool_directory__/fsd_regions.py $file1 --inputName1 $file1.name $file2 --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>
