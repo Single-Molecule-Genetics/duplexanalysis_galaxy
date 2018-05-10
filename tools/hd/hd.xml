@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tool id="hd" name="Duplex Sequencing Analysis:" version="0.0.1">
     <requirements>
+        <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
     </requirements>
     <description>Hamming distance (HD) analysis of tags</description>
     <command>
-        python $__tool_directory__/hd.py $inputFile --inputName1 $inputFile.name --inputFile2 $inputFile2 --inputName2 $inputFile2.name --sample_size $sampleSize --sep $separator --subset_tag $subsetTag --nproc $nproc $onlyDCS --minFS $minFS --maxFS $maxFS --output_csv $output_csv --output_pdf $output_pdf 
+        python2 $__tool_directory__/hd.py --inputFile "$inputFile" --inputName1 "$inputFile.name" --inputFile2 "$inputFile2" --inputName2 "$inputFile2.name" --sample_size $sampleSize --sep $separator --subset_tag $subsetTag --nproc $nproc $onlyDCS --minFS $minFS --maxFS $maxFS --output_csv $output_csv --output_pdf $output_pdf 
         #if $inputFile2:
         --output_pdf2 $output_pdf2 --output_csv2 $output_csv2
         #end if
     </command>
     <inputs>
         <param name="inputFile" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>
-        <param name="inputFile2" type="data" format="tabular" label="Dataset 2: input tags" optional="true" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Blanks in the filename are not allowed!!"/>
+        <param name="inputFile2" type="data" format="tabular" label="Dataset 2: input tags" optional="true" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family."/>
         <param name="sampleSize" type="integer" label="number of tags in the sample" value="1000" min="0" help="specifies the number of tags in one analysis. If sample size is 0, all tags of the dataset are compared against all tags."/>
         <param name="minFS" type="integer" label="minimum family size of the tags" min="1" value="1" help="filters the tags after their family size: Families with smaller size are skipped. Default: min. family size = 1."/>
         <param name="maxFS" type="integer" label="max family size of the tags" min="0" value="0" help="filters the tags after their family size: Families with larger size are skipped. If max. family size is 0, no upper bound is defined and the maximum family size in the analysis will be the maximum family size of the whole dataset. Default: max. family size = 0."/>
@@ -45,8 +46,6 @@
     
     This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands. 
     
-    **!!! Blanks in the filenames are not allowed !!!**
-    
     +-----+----------------------------+----+
     | 1   | AAAAAAAAAAAATGTTGGAATCTT   | ba |
     +-----+----------------------------+----+
@@ -72,4 +71,13 @@
    ]]> 
     
     </help>
+    <citations>
+        <citation type="bibtex">
+            @misc{duplex,
+            author = {Heinzl, Monika},
+            year = {2018},
+            title = {Development of algorithms for the analysis of duplex sequencing data}
+         }
+        </citation>
+    </citations>
 </tool>

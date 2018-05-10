@@ -11,8 +11,7 @@
 # If only one file is provided, then a family size distribution, which is separated after SSCSs without a partner and DCSs, is produced.
 # Whereas a family size distribution with multiple data in one plot is produced, when more than one file (up to 4) is given.
 
-# USAGE: python FSD_Galaxy_1.4_commandLine_FINAL.py filename --inputFile2 filename2 --inputFile3 filename3 --inputFile4 filename4 /
-#        --title_file outputFileName --sep "characterWhichSeparatesCSVFile"
+# USAGE: python FSD_Galaxy_1.4_commandLine_FINAL.py --inputFile1 filename --inputName1 filename --inputFile2 filename2 --inputName2 filename2 --inputFile3 filename3 --inputName3 filename3 --inputFile4 filename4 --inputName4 filename4 --sep "characterWhichSeparatesCSVFile" --output_csv outptufile_name_csv --output_pdf outptufile_name_pdf
 
 import numpy
 import matplotlib.pyplot as plt
@@ -55,7 +54,6 @@ def compare_read_families(argv):
 
     firstFile = args.inputFile1
     name1 = args.inputName1
-    #firstFile = args.inputName1
     
     secondFile = args.inputFile2
     name2 = args.inputName2
@@ -86,8 +84,6 @@ def compare_read_families(argv):
        fig = plt.figure()
        plt.subplots_adjust(bottom=0.25)
        if firstFile != str(None):
-           print(firstFile)
-           
            file1 = readFileReferenceFree(firstFile)
            integers = numpy.array(file1[:, 0]).astype(int)  ## keep original family sizes
 

@@ -14,7 +14,7 @@
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>
         <param name="file2" type="data" format="tabular" label="Dataset 2: input tags" optional="true"  />
         <param name="file3" type="data" format="tabular" label="Dataset 3: input tags" optional="true" />
-        <param name="file4" type="data" format="tabular" label="Dataset 4: input tags" optional="true"  help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Name of the files can have max. 34 charcters, blanks are not allowed!"/>
+        <param name="file4" type="data" format="tabular" label="Dataset 4: input tags" optional="true"  help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Name of the files can have max. 34 charcters!"/>
         <param name="separator" type="text" label="Separator of the CSV file." help="can be a single character" value=","/>
     </inputs>
     <outputs>
@@ -43,7 +43,7 @@
         
     This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands. 
     
-    **!!! Name of the files can have max. 34 charcters, blanks are not allowed !!!**
+    **!!! Name of the files can have max. 34 charcters !!!**
     
     +-----+----------------------------+----+
     | 1   | AAAAAAAAAAAATGTTGGAATCTT   | ba |

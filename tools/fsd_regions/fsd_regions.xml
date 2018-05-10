@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tool id="fsd_regions" name="Duplex Sequencing Analysis:" version="0.0.1">
     <requirements>
+        <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
     </requirements>
     <description>Family size distribution (FSD) of aligned tags to reference genome</description>
     <command>
-        python $__tool_directory__/fsd_regions.py $file1 --inputName1 $file1.name $file2 --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+        python2 $__tool_directory__/fsd_regions.py --inputFile "$file1" --inputName1 "$file1.name" --ref_genome "$file2" --sep $separator --output_csv $output_csv --output_pdf $output_pdf
     </command>
     <inputs>
-        <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Blanks in the filenames are not allowed!"/>
-        <param name="file2" type="data" format="txt" label="Dataset 2: input tags aligned to the reference genome" help="Input in txt format with the regions and the tags, which were aligned to the reference genome. Blanks in the filenames are not allowed!"/>
+        <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family."/>
+        <param name="file2" type="data" format="txt" label="Dataset 2: input tags aligned to the reference genome" help="Input in txt format with the regions and the tags, which were aligned to the reference genome."/>
         <param name="separator" type="text" label="Separator of the CSV file." help="can be a single character" value=","/>
     </inputs>
     <outputs>
@@ -24,8 +25,6 @@
                
         
 **Input**
-
-    **!!! Blanks in the filenames are not allowed !!!**
         
     This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands. 
     
@@ -63,4 +62,13 @@
         ]]> 
 
     </help>
+    <citations>
+        <citation type="bibtex">
+            @misc{duplex,
+            author = {Heinzl, Monika},
+            year = {2018},
+            title = {Development of algorithms for the analysis of duplex sequencing data}
+         }
+        </citation>
+    </citations>
 </tool>

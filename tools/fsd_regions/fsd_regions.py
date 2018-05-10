@@ -10,7 +10,7 @@
 # The program produces a plot which shows the distribution of family sizes of the tags from the input files and
 # a CSV file with the data of the plot.
 
-# USAGE: python FSD_regions_1.6_FINAL.py filenameSSCS filenameRefGenome --title_file outputFileName --sep "characterWhichSeparatesCSVFile"
+# USAGE: python FSD_regions_1.6_FINAL.py --inputFile filenameSSCS --inputName1 filenameSSCS --ref_genome  filenameRefGenome --sep "characterWhichSeparatesCSVFile" --output_csv outptufile_name_csv --output_pdf outptufile_name_pdf
 
 import numpy
 import matplotlib.pyplot as plt
@@ -26,10 +26,10 @@ def readFileReferenceFree(file, delim):
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Family Size Distribution of tags which were aligned to regions of the reference genome')
-    parser.add_argument('inputFile',
+    parser.add_argument('--inputFile',
                         help='Tabular File with three columns: ab or ba, tag and family size.')
     parser.add_argument('--inputName1')
-    parser.add_argument('ref_genome',
+    parser.add_argument('--ref_genome',
                         help='TXT File with tags of reads that overlap the region.')
     parser.add_argument('--output_csv', default="data.csv", type=str,
                         help='Name of the pdf and csv file.')

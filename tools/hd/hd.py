@@ -13,8 +13,8 @@
 # It is also possible to perform the HD analysis with shortened tags with given sizes as input.
 # The tool can run on a certain number of processors, which can be defined by the user.
 
-# USAGE: python HDnew6_1Plot_FINAL.py filename --inputFile2 --sample_size int/0 --title_file outputFileName --sep "characterWhichSeparatesCSVFile" /
-#        --only_DCS True --FamilySize3 True --subset_tag True --nproc int
+# USAGE: python HDnew6_1Plot_FINAL.py --inputFile filename --inputName1 filename --inputFile2 filename2 --inputName2 filename2 --sample_size int/0 --sep "characterWhichSeparatesCSVFile" /
+#        --only_DCS True --FamilySize3 True --subset_tag True --nproc int --output_csv outptufile_name_csv --output_pdf outptufile_name_pdf
 
 import numpy
 import itertools
@@ -210,7 +210,7 @@ def familySizeDistributionWithHD(fs, ham, diff=False, rel = True):
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Hamming distance analysis of duplex sequencing data')
-    parser.add_argument('inputFile',
+    parser.add_argument('--inputFile',
                         help='Tabular File with three columns: ab or ba, tag and family size.')
     parser.add_argument('--inputName1')
     parser.add_argument('--inputFile2',default=None,

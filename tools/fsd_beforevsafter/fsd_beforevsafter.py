@@ -11,8 +11,8 @@
 # The program produces a plot which shows the distribution of family sizes of the DCS from the input files and
 # a CSV file with the data of the plot.
 
-# USAGE: python FSD before vs after_no_refF1.3_FINAL.py filenameSSCS filenameMakeDCS --afterTrimming filenameAfterTrimming /
-# -- alignedTags filenameTagsRefGenome --title_file outputFileName --sep "characterWhichSeparatesCSVFile"
+# USAGE: python FSD before vs after_no_refF1.3_FINAL.py --inputFile_SSCS filenameSSCS --makeDCS filenameMakeDCS --afterTrimming filenameAfterTrimming -- alignedTags filenameTagsRefGenome 
+# --sep "characterWhichSeparatesCSVFile" --output_csv outptufile_name_csv --output_pdf outptufile_name_pdf
 
 
 import numpy
@@ -44,9 +44,9 @@ def readFasta(file):
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Analysis of read loss in duplex sequencing data')
-    parser.add_argument('inputFile_SSCS',
+    parser.add_argument('--inputFile_SSCS',
                         help='Tabular File with three columns: ab or ba, tag and family size.')
-    parser.add_argument('makeDCS',
+    parser.add_argument('--makeDCS',
                         help='FASTA File with information about tag and family size in the header.')
     parser.add_argument('--afterTrimming',default=None,
                         help='FASTA File with information about tag and family size in the header.')
