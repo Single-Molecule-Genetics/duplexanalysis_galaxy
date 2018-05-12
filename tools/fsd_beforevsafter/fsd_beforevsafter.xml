@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="fsd_beforevsafter" name="Duplex Sequencing Analysis:" version="0.0.1">
+<tool id="fsd_beforevsafter" name="Duplex Sequencing Analysis:" version="0.0.2">
     <requirements>
 		<!-- galaxy version 16.04 -->
         <requirement type="package" version="2.7">python</requirement>
