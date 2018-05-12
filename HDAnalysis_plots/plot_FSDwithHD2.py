@@ -59,10 +59,7 @@ def plotFSDwithHD2(familySizeList1,maximumXFS,minimumXFS, quant,
                                                 float(counts[0][len(counts[0]) - 1][1]) / sum(
                                                     counts[0][len(counts[0]) - 1]))
     plt.text(0.7, -0.08, legend3, transform=plt.gcf().transFigure, size=12)
-
     plt.grid(b=True, which='major', color='#424242', linestyle=':')
 
-    #plt.savefig("{}_FSDwithHD_{}.png".format(title_savedFile, name), bbox_inches="tight")
     pdf.savefig(fig, bbox_inches="tight")
-
     plt.close("all")

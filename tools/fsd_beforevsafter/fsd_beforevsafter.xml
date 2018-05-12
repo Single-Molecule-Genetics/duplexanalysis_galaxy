@@ -4,7 +4,7 @@
 		<!-- galaxy version 16.04 -->
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
-        <requirement type="package" version="1.70">biopython</requirement>
+        <requirement type="package" version="1.7">biopython</requirement>
         
     </requirements>
     <description>Family size distribution (FSD) of tags from various steps of the Du Novo pipeline</description>
@@ -42,7 +42,7 @@
     
     
     
-    **Dataset 2:** And a fasta file with all tags and their family sizes of both strands (forward and reverse) in the header and the read itself in the next line is required. This input file can be obtained by Du Novo: make families. 
+    **Dataset 2:** And a fasta file with all tags and their family sizes of both strands (forward and reverse) in the header and the read itself in the next line is required. This input file can be obtained by Du Novo: make consensus reads. 
     
     
     **Dataset 3 (optional):** In addition, the fasta file with all tags, which were not filtered out after trimming, can be given.

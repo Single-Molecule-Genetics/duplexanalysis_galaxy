@@ -24,16 +24,404 @@ import os.path
 import cPickle as pickle
 from multiprocessing.pool import Pool
 from functools import partial
-from HDAnalysis_plots.plot_HDwithFSD import plotHDwithFSD
-from HDAnalysis_plots.plot_FSDwithHD2 import plotFSDwithHD2
-from HDAnalysis_plots.plot_HDwithinSeq_Sum2 import plotHDwithinSeq_Sum2
-from HDAnalysis_plots.table_HD import createTableHD, createFileHD, createTableHDwithTags, createFileHDwithinTag
-from HDAnalysis_plots.table_FSD import createTableFSD2, createFileFSD2
+#from HDAnalysis_plots.plot_HDwithFSD import plotHDwithFSD
+#from HDAnalysis_plots.plot_FSDwithHD2 import plotFSDwithHD2
+#from HDAnalysis_plots.plot_HDwithinSeq_Sum2 import plotHDwithinSeq_Sum2
+#from HDAnalysis_plots.table_HD import createTableHD, createFileHD, createTableHDwithTags, createFileHDwithinTag
+#from HDAnalysis_plots.table_FSD import createTableFSD2, createFileFSD2
 import argparse
 import sys
 import os
 from matplotlib.backends.backend_pdf import PdfPages
+from collections import Counter
 
+def plotFSDwithHD2(familySizeList1,maximumXFS,minimumXFS, quant,
+                   title_file1, subtitle, pdf, relative=False, diff = True):
+    if diff is False:
+        colors = ["#e6194b", "#3cb44b", "#ffe119", "#0082c8", "#f58231", "#911eb4"]
+        labels = ["HD=1", "HD=2", "HD=3", "HD=4", "HD=5-8","HD>8"]
+    else:
+        colors = ["#93A6AB", "#403C14", "#731E41", "#BAB591", "#085B6F", "#E8AA35", "#726C66"]
+        if relative is True:
+            labels = ["d=0", "d=0.1", "d=0.2", "d=0.3", "d=0.4", "d=0.5-0.8", "d>0.8"]
+        else:
+            labels = ["d=0","d=1", "d=2", "d=3", "d=4", "d=5-8","d>8"]
+
+    fig = plt.figure(figsize=(6, 7))
+    ax = fig.add_subplot(111)
+    plt.subplots_adjust(bottom=0.1)
+    p1 = numpy.bincount(numpy.concatenate((familySizeList1)))
+    maximumY = numpy.amax(p1)
+
+    if len(range(minimumXFS, maximumXFS)) == 0:
+        range1 = range(minimumXFS - 1, minimumXFS + 2)
+    else:
+        range1 = range(0, maximumXFS + 2)
+    counts = plt.hist(familySizeList1, label=labels,
+                      color=colors, stacked=True,
+                      rwidth=0.8,alpha=1, align="left",
+                      edgecolor="None",bins=range1)
+    plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.45, 1))
+
+    plt.title(title_file1, fontsize=12)
+    plt.suptitle(subtitle, y=1, x=0.5, fontsize=14)
+    plt.xlabel("No. of Family Members", fontsize=12)
+    plt.ylabel("Absolute Frequency", fontsize=12)
+
+    ticks = numpy.arange(0, maximumXFS + 1, 1)
+    ticks1 = map(str, ticks)
+    if maximumXFS >= 20:
+        ticks1[len(ticks1) - 1] = ">=20"
+    plt.xticks(numpy.array(ticks), ticks1)
+    [l.set_visible(False) for (i, l) in enumerate(ax.get_xticklabels()) if i % 5 != 0]
+
+    plt.xlim((0, maximumXFS + 1))
+    if len(numpy.concatenate(familySizeList1)) != 0:
+        plt.ylim((0, max(numpy.bincount(numpy.concatenate(familySizeList1))) * 1.1))
+
+    plt.ylim((0, maximumY * 1.2))
+    legend = "\nmax. family size: \nabsolute frequency: \nrelative frequency: "
+    plt.text(0.15, -0.08, legend, size=12, transform=plt.gcf().transFigure)
+
+    count = numpy.bincount(quant)  # original counts
+    legend1 = "{}\n{}\n{:.5f}" \
+        .format(max(quant), count[len(count) - 1], float(count[len(count) - 1]) / sum(count))
+    plt.text(0.5, -0.08, legend1, size=12, transform=plt.gcf().transFigure)
+    legend3 = "singletons\n{:,}\n{:.5f}".format(int(counts[0][len(counts[0]) - 1][1]),
+                                                float(counts[0][len(counts[0]) - 1][1]) / sum(
+                                                    counts[0][len(counts[0]) - 1]))
+    plt.text(0.7, -0.08, legend3, transform=plt.gcf().transFigure, size=12)
+    plt.grid(b=True, which='major', color='#424242', linestyle=':')
+
+    pdf.savefig(fig, bbox_inches="tight")
+    plt.close("all")
+    
+def plotHDwithFSD(list1,maximumX,minimumX, subtitle, lenTags, title_file1,pdf,
+                   xlabel,relative=False):
+    if relative is True:
+        step = 0.1
+    else:
+        step = 1
+
+    fig = plt.figure(figsize=(6, 8))
+    plt.subplots_adjust(bottom=0.1)
+    con_list1 = numpy.concatenate(list1)
+    p1 = numpy.array([v for k, v in sorted(Counter(con_list1).iteritems())])
+    maximumY = numpy.amax(p1)
+
+    if relative is True:  # relative difference
+        bin1 = numpy.arange(-1, maximumX + 0.2, 0.1)
+    else:
+        bin1 = maximumX + 1
+
+    counts = plt.hist(list1, bins=bin1, edgecolor='black', linewidth=1,
+                      label=["FS=1", "FS=2", "FS=3", "FS=4", "FS=5-10",
+                             "FS>10"], rwidth=0.8,
+                      color=["#808080", "#FFFFCC", "#FFBF00", "#DF0101", "#0431B4", "#86B404"],
+                      stacked=True, alpha=1,
+                      align="left",
+                      range=(0, maximumX + 1))
+    plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.45, 1))
+    bins = counts[1]  # width of bins
+    counts = numpy.array(map(int, counts[0][5]))
+    plt.suptitle(subtitle, y=1, x=0.5, fontsize=14)
+    plt.title(title_file1, fontsize=12)
+    plt.xlabel(xlabel, fontsize=12)
+    plt.ylabel("Absolute Frequency", fontsize=12)
+
+    plt.grid(b=True, which='major', color='#424242', linestyle=':')
+    plt.axis((minimumX - step, maximumX + step, 0, numpy.amax(counts) + sum(counts) * 0.1))
+    plt.xticks(numpy.arange(0, maximumX + step, step))
+
+    plt.ylim((0, maximumY * 1.2))
+
+    bin_centers = -0.4 * numpy.diff(bins) + bins[:-1]
+    for x_label, label in zip(counts, bin_centers):  # labels for values
+        if x_label == 0:
+            continue
+        else:
+            plt.annotate("{:,}\n{:.3f}".format(x_label, float(x_label) / sum(counts), 1),
+                         xy=(label, x_label + len(con_list1) * 0.01),
+                         xycoords="data", color="#000066",fontsize=10)
+
+    legend = "sample size= {:,} against {:,}".format(sum(counts), lenTags)
+    plt.text(0.14, -0.01, legend, size=12, transform=plt.gcf().transFigure)
+
+    pdf.savefig(fig, bbox_inches="tight")
+    plt.close("all")
+    plt.clf()
+
+def plotHDwithinSeq_Sum2(sum1, sum2,min_value, lenTags, title_file1, pdf):
+    fig = plt.figure(figsize=(6, 8))
+    plt.subplots_adjust(bottom=0.1)
+
+    ham = [numpy.array(min_value), sum1, sum2]  # new hd within tags
+
+    maximumX = numpy.amax(numpy.concatenate(ham))
+    minimumX = numpy.amin(numpy.concatenate(ham))
+    maximumY = numpy.amax(numpy.concatenate(map(lambda (x): numpy.bincount(x), ham)))
+
+    if len(range(minimumX, maximumX)) == 0:
+        range1 = minimumX
+    else:
+        range1 = range(minimumX, maximumX + 2)
+
+    counts = plt.hist(ham, align="left", rwidth=0.8, stacked=False,
+                      label=["HD of whole tag", "tag1 - a\nvs. tag2 - a", "tag1 - b\nvs. tag2 - b"],
+                      bins=range1, color=["#585858", "#58ACFA", "#FA5858"], edgecolor='black', linewidth=1)
+    plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.55, 1))
+    plt.suptitle('Hamming distances within tags', fontsize=14)
+    plt.title(title_file1, fontsize=12)
+    plt.xlabel("Hamming Distance", fontsize=12)
+    plt.ylabel("Absolute Frequency", fontsize=12)
+    plt.grid(b=True, which='major', color='#424242', linestyle=':')
+
+
+    plt.axis((minimumX - 1, maximumX + 1, 0, maximumY * 1.1))
+    plt.xticks(numpy.arange(minimumX - 1, maximumX + 1, 1.0))
+    plt.ylim((0, maximumY * 1.1))
+
+    legend = "sample size= {:,} against {:,}".format(len(ham[0]), lenTags, lenTags)
+    plt.text(0.14, -0.01, legend, size=12, transform=plt.gcf().transFigure)
+    pdf.savefig(fig, bbox_inches="tight")
+    plt.close("all")
+    plt.clf()
+
+def createTableFSD2(list1, diff=True):
+    selfAB = numpy.concatenate(list1)
+    uniqueFS = numpy.unique(selfAB)
+    nr = numpy.arange(0, len(uniqueFS), 1)
+    if diff is False:
+        count = numpy.zeros((len(uniqueFS), 6))
+    else:
+        count = numpy.zeros((len(uniqueFS), 7))
+
+    state = 1
+    for i in list1:
+        counts = list(Counter(i).items())
+        hd = [item[0] for item in counts]
+        c = [item[1] for item in counts]
+        table = numpy.column_stack((hd, c))
+        if len(table) == 0:
+            state = state + 1
+            continue
+        else:
+            if state == 1:
+                for i, l  in zip(uniqueFS, nr):
+                    for j in table:
+                        if j[0] == uniqueFS[l]:
+                            count[l, 0] = j[1]
+            if state == 2:
+                for i, l in zip(uniqueFS, nr):
+                    for j in table:
+                        if j[0] == uniqueFS[l]:
+                            count[l, 1] = j[1]
+
+            if state == 3:
+                for i, l in zip(uniqueFS, nr):
+                    for j in table:
+                        if j[0] == uniqueFS[l]:
+                            count[l, 2] = j[1]
+
+            if state == 4:
+                for i, l in zip(uniqueFS, nr):
+                    for j in table:
+                        if j[0] == uniqueFS[l]:
+                            count[l, 3] = j[1]
+
+            if state == 5:
+                for i, l in zip(uniqueFS, nr):
+                    for j in table:
+                        if j[0] == uniqueFS[l]:
+                            count[l, 4] = j[1]
+
+            if state == 6:
+                for i, l in zip(uniqueFS, nr):
+                    for j in table:
+                        if j[0] == uniqueFS[l]:
+                            count[l, 5] = j[1]
+
+            if state == 7:
+                for i, l in zip(uniqueFS, nr):
+                    for j in table:
+                        if j[0] == uniqueFS[l]:
+                            count[l, 6] = j[1]
+            state = state + 1
+
+        sumRow = count.sum(axis=1)
+        sumCol = count.sum(axis=0)
+
+    uniqueFS = uniqueFS.astype(str)
+    if uniqueFS[len(uniqueFS) - 1] == "20":
+        uniqueFS[len(uniqueFS) - 1] = ">20"
+
+    first = ["FS={}".format(i) for i in uniqueFS]
+    final = numpy.column_stack((first, count, sumRow))
+
+    return (final, sumCol)
+
+def createFileFSD2(summary, sumCol, overallSum, output_file, name,sep, rel=False, diff=True):
+    output_file.write(name)
+    output_file.write("\n")
+    if diff is False:
+        output_file.write("{}HD=1{}HD=2{}HD=3{}HD=4{}HD=5-8{}HD>8{}sum{}\n".format(sep,sep,sep,sep,sep,sep,sep,sep))
+    else:
+        if rel is False:
+            output_file.write("{}diff=0{}diff=1{}diff=2{}diff=3{}diff=4{}diff=5-8{}diff>8{}sum{}\n".format(sep,sep,sep,sep,sep,sep,sep,sep,sep))
+        else:
+            output_file.write("{}diff=0{}diff=0.1{}diff=0.2{}diff=0.3{}diff=0.4{}diff=0.5-0.8{}diff>0.8{}sum{}\n".format(sep,sep,sep,sep,sep,sep,sep,sep,sep))
+
+    for item in summary:
+        for nr in item:
+            if "FS" not in nr and "diff" not in nr:
+                nr = nr.astype(float)
+                nr = nr.astype(int)
+            output_file.write("{}{}".format(nr,sep))
+        output_file.write("\n")
+    output_file.write("sum{}".format(sep))
+    sumCol = map(int, sumCol)
+    for el in sumCol:
+        output_file.write("{}{}".format(el,sep))
+    output_file.write("{}{}".format(overallSum.astype(int),sep))
+    output_file.write("\n\n")
+
+def createTableHD(list1, row_label):
+    selfAB = numpy.concatenate(list1)
+    uniqueHD = numpy.unique(selfAB)
+    nr = numpy.arange(0, len(uniqueHD), 1)
+    count = numpy.zeros((len(uniqueHD), 6))
+    state = 1
+    for i in list1:
+        counts = list(Counter(i).items())
+        hd = [item[0] for item in counts]
+        c = [item[1] for item in counts]
+        table = numpy.column_stack((hd, c))
+        if len(table) == 0:
+            state = state + 1
+            continue
+        else:
+            if state == 1:
+                for i, l  in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 0] = j[1]
+            if state == 2:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 1] = j[1]
+
+            if state == 3:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 2] = j[1]
+
+            if state == 4:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 3] = j[1]
+
+            if state == 5:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 4] = j[1]
+
+            if state == 6:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 5] = j[1]
+            state = state + 1
+
+        sumRow = count.sum(axis=1)
+        sumCol = count.sum(axis=0)
+        first = ["{}{}".format(row_label,i) for i in uniqueHD]
+        final = numpy.column_stack((first, count, sumRow))
+
+    return (final, sumCol)
+
+def createTableHDwithTags(list1):
+    selfAB = numpy.concatenate(list1)
+    uniqueHD = numpy.unique(selfAB)
+    nr = numpy.arange(0, len(uniqueHD), 1)
+    count = numpy.zeros((len(uniqueHD), 3))
+
+    state = 1
+    for i in list1:
+        counts = list(Counter(i).items())
+        hd = [item[0] for item in counts]
+        c = [item[1] for item in counts]
+        table = numpy.column_stack((hd, c))
+        if len(table) == 0:
+            state = state + 1
+            continue
+        else:
+            if state == 1:
+                for i, l  in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 0] = j[1]
+            if state == 2:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 1] = j[1]
+
+            if state == 3:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 2] = j[1]
+            state = state + 1
+
+        sumRow = count.sum(axis=1)
+        sumCol = count.sum(axis=0)
+        first = ["HD={}".format(i) for i in uniqueHD]
+        final = numpy.column_stack((first, count, sumRow))
+
+    return (final, sumCol)
+
+def createFileHD(summary, sumCol, overallSum, output_file, name,sep):
+    output_file.write(name)
+    output_file.write("\n")
+    output_file.write("{}FS=1{}FS=2{}FS=3{}FS=4{}FS=5-10{}FS>10{}sum{}\n".format(sep,sep,sep,sep,sep,sep,sep,sep))
+    for item in summary:
+        for nr in item:
+            if "HD" not in nr and "diff" not in nr:
+                nr = nr.astype(float)
+                nr = nr.astype(int)
+            output_file.write("{}{}".format(nr,sep))
+        output_file.write("\n")
+    output_file.write("sum{}".format(sep))
+    sumCol = map(int, sumCol)
+    for el in sumCol:
+        output_file.write("{}{}".format(el,sep))
+    output_file.write("{}{}".format(overallSum.astype(int),sep))
+    output_file.write("\n\n")
+
+def createFileHDwithinTag(summary, sumCol, overallSum, output_file, name,sep):
+    output_file.write(name)
+    output_file.write("\n")
+    output_file.write("{}HD of whole tag;tag1-half1 vs. tag2-half1{}tag1-half2 vs. tag2-half2{}sum{}\n".format(sep,sep,sep,sep))
+    for item in summary:
+        for nr in item:
+            if "HD" not in nr:
+                nr = nr.astype(float)
+                nr = nr.astype(int)
+            output_file.write("{}{}".format(nr,sep))
+        output_file.write("\n")
+    output_file.write("sum{}".format(sep))
+    sumCol = map(int, sumCol)
+    for el in sumCol:
+        output_file.write("{}{}".format(el,sep))
+    output_file.write("{}{}".format(overallSum.astype(int),sep))
+    output_file.write("\n\n")
+
+
+    
 def hamming(array1, array2):
     res = 99 * numpy.ones(len(array1))
     i = 0
