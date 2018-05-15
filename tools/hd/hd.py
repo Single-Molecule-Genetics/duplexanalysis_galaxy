@@ -457,7 +457,7 @@ def hamming_difference(array1, array2, mate_b):
     #min_tagsList = []
     #diff11_zeros = []
     #min_tagsList_zeros = []
-    c = 0 # counter, only used to see how many HDs of tags were already calculated
+    counter = 0 # counter, only used to see how many HDs of tags were already calculated
     if mate_b is False: # HD calculation for all a's
         half1_mate1 = array1_half
         half2_mate1 = array1_half2
@@ -496,21 +496,21 @@ def hamming_difference(array1, array2, mate_b):
             else:  # half1, corrects the variable of the HD from both halfs if it is a or b
                 d = d_1
                 d2 = d_2
-            min_valueList[c] = d + d2
-            min_tagsList[c] = tag
-            ham1.append[c] = d
-            ham2.append[c] = d2
+            min_valueList[counter] = d + d2
+            min_tagsList[counter] = tag
+            ham1.append[counter] = d
+            ham2.append[counter] = d2
             difference1 = abs(d - d2)
-            diff11[c] = difference1
+            diff11[counter] = difference1
             rel_difference = round(float(difference1) / (d + d2), 1)
-            relativeDiffList[c] = rel_difference
+            relativeDiffList[counter] = rel_difference
 
             #### tags which have identical parts:
             if d == 0 or d2 == 0:
-                min_tagsList_zeros[c] = tag
+                min_tagsList_zeros[counter] = tag
                 difference1_zeros = abs(d - d2)
-                diff11_zeros[c] = difference1_zeros
-            c += 1
+                diff11_zeros[counter] = difference1_zeros
+            counter += 1
             
         #print(i)
     diff11 = [st for st in diff11 if st != 999]
