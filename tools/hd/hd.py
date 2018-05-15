@@ -498,8 +498,8 @@ def hamming_difference(array1, array2, mate_b):
                 d2 = d_2
             min_valueList[counter] = d + d2
             min_tagsList[counter] = tag
-            ham1.append[counter] = d
-            ham2.append[counter] = d2
+            ham1[counter] = d
+            ham2[counter] = d2
             difference1 = abs(d - d2)
             diff11[counter] = difference1
             rel_difference = round(float(difference1) / (d + d2), 1)
@@ -510,6 +510,7 @@ def hamming_difference(array1, array2, mate_b):
                 min_tagsList_zeros[counter] = tag
                 difference1_zeros = abs(d - d2)
                 diff11_zeros[counter] = difference1_zeros
+            
             counter += 1
             
         #print(i)
