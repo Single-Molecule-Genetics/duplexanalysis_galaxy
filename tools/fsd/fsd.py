@@ -214,7 +214,7 @@ def compare_read_families(argv):
 
        plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(0.9, 1))
        plt.title("Family Size Distribution", fontsize=14)
-       plt.xlabel("No. of Family Members", fontsize=14)
+       plt.xlabel("Family size", fontsize=14)
        plt.ylabel("Absolute Frequency", fontsize=14)
        plt.margins(0.01, None)
        plt.grid(b=True, which="major", color="#424242", linestyle=":")
@@ -322,7 +322,7 @@ def compare_read_families(argv):
 
             plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
             plt.title(name1, fontsize=14)
-            plt.xlabel("No. of Family Members", fontsize=14)
+            plt.xlabel("Family size", fontsize=14)
             plt.ylabel("Absolute Frequency", fontsize=14)
             plt.margins(0.01, None)
             plt.grid(b=True, which="major", color="#424242", linestyle=":")

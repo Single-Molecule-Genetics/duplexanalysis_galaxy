@@ -11,7 +11,7 @@
 # The program produces a plot which shows the distribution of family sizes of the DCS from the input files and
 # a CSV file with the data of the plot.
 
-# USAGE: python FSD before vs after_no_refF1.3_FINAL.py --inputFile_SSCS filenameSSCS --makeDCS filenameMakeDCS --afterTrimming filenameAfterTrimming -- alignedTags filenameTagsRefGenome 
+# USAGE: python FSD before vs after_no_refF1.3_FINAL.py --inputFile_SSCS filenameSSCS --inputName1 filenameSSCS --makeDCS filenameMakeDCS --afterTrimming filenameAfterTrimming -- alignedTags filenameTagsRefGenome 
 # --sep "characterWhichSeparatesCSVFile" --output_csv outptufile_name_csv --output_pdf outptufile_name_pdf
 
 
@@ -46,6 +46,7 @@ def make_argparser():
     parser = argparse.ArgumentParser(description='Analysis of read loss in duplex sequencing data')
     parser.add_argument('--inputFile_SSCS',
                         help='Tabular File with three columns: ab or ba, tag and family size.')
+    parser.add_argument('--inputName1')
     parser.add_argument('--makeDCS',
                         help='FASTA File with information about tag and family size in the header.')
     parser.add_argument('--afterTrimming',default=None,
@@ -65,6 +66,7 @@ def compare_read_families_read_loss(argv):
     args = parser.parse_args(argv[1:])
 
     SSCS_file = args.inputFile_SSCS
+    SSCS_file_name = args.inputName1
     makeConsensus = args.makeDCS
     afterTrimming = args.afterTrimming
     ref_genome = args.alignedTags
@@ -221,9 +223,9 @@ def compare_read_families_read_loss(argv):
         plt.text(0.1, 0.02, legend4, size=11, transform=plt.gcf().transFigure)
 
         plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
-        plt.title("Family Size Distribution of Tags from various Steps of the Galaxy Pipeline", fontsize=14)
-        plt.xlabel("No. of Family Members", fontsize=12)
-        plt.ylabel("Absolute Frequency", fontsize=12)
+        plt.title("Family size distribution of tags from various steps of the Du Novo pipeline", fontsize=14)
+        plt.xlabel("Family size", fontsize=14)
+        plt.ylabel("Absolute Frequency", fontsize=14)
         plt.grid(b=True, which="major", color="#424242", linestyle=":")
         plt.margins(0.01, None)
 
@@ -231,7 +233,7 @@ def compare_read_families_read_loss(argv):
         plt.close()
 
     # write information about plot into a csv file
-        output_file.write("Dataset:{}{}\n".format(sep, SSCS_file))
+        output_file.write("Dataset:{}{}\n".format(sep, SSCS_file_name))
         if ref_genome != str(None):
             output_file.write("{}AB{}BA\n".format(sep, sep))
             output_file.write("max. family size:{}{}{}{}\n".format(sep, max(quant_ab_ref), sep, max(quant_ba_ref)))

@@ -63,10 +63,10 @@ def plotFSDwithHD2(familySizeList1,maximumXFS,minimumXFS, quant,
                       edgecolor="None",bins=range1)
     plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.45, 1))
 
-    plt.title(title_file1, fontsize=12)
+    #plt.title(title_file1, fontsize=12)
     plt.suptitle(subtitle, y=1, x=0.5, fontsize=14)
-    plt.xlabel("No. of Family Members", fontsize=12)
-    plt.ylabel("Absolute Frequency", fontsize=12)
+    plt.xlabel("Family size", fontsize=14)
+    plt.ylabel("Absolute Frequency", fontsize=14)
 
     ticks = numpy.arange(0, maximumXFS + 1, 1)
     ticks1 = map(str, ticks)
@@ -125,9 +125,9 @@ def plotHDwithFSD(list1,maximumX,minimumX, subtitle, lenTags, title_file1,pdf,
     bins = counts[1]  # width of bins
     counts = numpy.array(map(int, counts[0][5]))
     plt.suptitle(subtitle, y=1, x=0.5, fontsize=14)
-    plt.title(title_file1, fontsize=12)
-    plt.xlabel(xlabel, fontsize=12)
-    plt.ylabel("Absolute Frequency", fontsize=12)
+   # plt.title(title_file1, fontsize=12)
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel("Absolute Frequency", fontsize=14)
 
     plt.grid(b=True, which='major', color='#424242', linestyle=':')
     plt.axis((minimumX - step, maximumX + step, 0, numpy.amax(counts) + sum(counts) * 0.1))
@@ -155,7 +155,7 @@ def plotHDwithinSeq_Sum2(sum1, sum2,min_value, lenTags, title_file1, pdf):
     fig = plt.figure(figsize=(6, 8))
     plt.subplots_adjust(bottom=0.1)
 
-    ham = [numpy.array(min_value), sum1, sum2]  # new hd within tags
+    ham = [sum1, sum2,numpy.array(min_value)]  # new hd within tags
 
     maximumX = numpy.amax(numpy.concatenate(ham))
     minimumX = numpy.amin(numpy.concatenate(ham))
@@ -167,18 +167,18 @@ def plotHDwithinSeq_Sum2(sum1, sum2,min_value, lenTags, title_file1, pdf):
         range1 = range(minimumX, maximumX + 2)
 
     counts = plt.hist(ham, align="left", rwidth=0.8, stacked=False,
-                      label=["HD of whole tag", "tag1 - a\nvs. tag2 - a", "tag1 - b\nvs. tag2 - b"],
+                      label=[ "HD a", "HD b","HD a+b"],
                       bins=range1, color=["#585858", "#58ACFA", "#FA5858"], edgecolor='black', linewidth=1)
     plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.55, 1))
     plt.suptitle('Hamming distances within tags', fontsize=14)
-    plt.title(title_file1, fontsize=12)
-    plt.xlabel("Hamming Distance", fontsize=12)
-    plt.ylabel("Absolute Frequency", fontsize=12)
+    #plt.title(title_file1, fontsize=12)
+    plt.xlabel("Hamming Distance", fontsize=14)
+    plt.ylabel("Absolute Frequency", fontsize=14)
     plt.grid(b=True, which='major', color='#424242', linestyle=':')
 
 
     plt.axis((minimumX - 1, maximumX + 1, 0, maximumY * 1.1))
-    plt.xticks(numpy.arange(minimumX - 1, maximumX + 1, 1.0))
+    plt.xticks(numpy.arange(0, maximumX + 1, 1.0))
     plt.ylim((0, maximumY * 1.1))
 
     legend = "sample size= {:,} against {:,}".format(len(ham[0]), lenTags, lenTags)
@@ -405,7 +405,7 @@ def createFileHD(summary, sumCol, overallSum, output_file, name,sep):
 def createFileHDwithinTag(summary, sumCol, overallSum, output_file, name,sep):
     output_file.write(name)
     output_file.write("\n")
-    output_file.write("{}HD of whole tag;tag1-half1 vs. tag2-half1{}tag1-half2 vs. tag2-half2{}sum{}\n".format(sep,sep,sep,sep))
+    output_file.write("{}HD a+b;HD a{}HD b{}sum{}\n".format(sep,sep,sep,sep))
     for item in summary:
         for nr in item:
             if "HD" not in nr:
@@ -419,8 +419,6 @@ def createFileHDwithinTag(summary, sumCol, overallSum, output_file, name,sep):
         output_file.write("{}{}".format(el,sep))
     output_file.write("{}{}".format(overallSum.astype(int),sep))
     output_file.write("\n\n")
-
-
     
 def hamming(array1, array2):
     res = 99 * numpy.ones(len(array1))
@@ -441,14 +439,24 @@ def hamming_difference(array1, array2, mate_b):
     array2_half = numpy.array([i[0:(len(i)) / 2] for i in array2]) # mate2 part1
     array2_half2 = numpy.array([i[len(i) / 2:len(i)] for i in array2])  # mate2 part2
 
-    diff11 = []
-    relativeDiffList = []
-    ham1 = []
-    ham2 = []
-    min_valueList = []
-    min_tagsList = []
-    diff11_zeros = []
-    min_tagsList_zeros = []
+    diff11 = 999 * numpy.ones(len(array2))
+    relativeDiffList = 999 * numpy.ones(len(array2))
+    ham1 = 999 * numpy.ones(len(array2))
+    ham2 = 999 * numpy.ones(len(array2))
+    min_valueList = 999 * numpy.ones(len(array2))
+    min_tagsList = 999 * numpy.ones(len(array2))
+    diff11_zeros = 999 * numpy.ones(len(array2))
+    min_tagsList_zeros = 999 * numpy.ones(len(array2))
+    
+    
+    #diff11 = []
+    #relativeDiffList = []
+    #ham1 = []
+    #ham2 = []
+    #min_valueList = []
+    #min_tagsList = []
+    #diff11_zeros = []
+    #min_tagsList_zeros = []
     i = 0 # counter, only used to see how many HDs of tags were already calculated
     if mate_b is False: # HD calculation for all a's
         half1_mate1 = array1_half
@@ -488,22 +496,32 @@ def hamming_difference(array1, array2, mate_b):
             else:  # half1, corrects the variable of the HD from both halfs if it is a or b
                 d = d_1
                 d2 = d_2
-            min_valueList.append(d + d2)
-            min_tagsList.append(tag)
-            ham1.append(d)
-            ham2.append(d2)
+            min_valueList[i] = d + d2
+            min_tagsList[i] = tag
+            ham1.append[i] = d
+            ham2.append[i] = d2
             difference1 = abs(d - d2)
-            diff11.append(difference1)
+            diff11[i] = difference1
             rel_difference = round(float(difference1) / (d + d2), 1)
-            relativeDiffList.append(rel_difference)
+            relativeDiffList[i] = rel_difference
 
             #### tags which have identical parts:
             if d == 0 or d2 == 0:
-                min_tagsList_zeros.append(tag)
+                min_tagsList_zeros[i] = tag
                 difference1_zeros = abs(d - d2)
-                diff11_zeros.append(difference1_zeros)
+                diff11_zeros[i] = difference1_zeros
+            i += 1
+            
         #print(i)
-        i += 1
+    diff11 = [st for st in diff11 if st != 999]
+    ham1 = [st for st in ham1 if st != 999]
+    ham2 = [st for st in ham2 if st != 999]
+    min_valueList = [st for st in min_valueList if st != 999]
+    min_tagsList = [st for st in min_tagsList if st != 999]
+    relativeDiffList = [st for st in relativeDiffList if st != 999]
+    diff11_zeros = [st for st in diff11_zeros if st != 999]
+    min_tagsList_zeros = [st for st in min_tagsList_zeros if st != 999]
+
     return ([diff11, ham1, ham2, min_valueList, min_tagsList, relativeDiffList, diff11_zeros, min_tagsList_zeros])
 
 def readFileReferenceFree(file):
@@ -825,11 +843,10 @@ def Hamming_Distance_Analysis(argv):
                 ham = numpy.tile(ham, 2)
 
             # prepare data for different kinds of plots
-            list1, maximumX, minimumX = hammingDistanceWithFS(quant, ham)  # histogram of HDs separated after FS
             # distribution of FSs separated after HD
-            familySizeList1, hammingDistances, maximumXFS, minimumXFS = familySizeDistributionWithHD(quant, ham,
-                                                                                                     rel=False)
-
+            familySizeList1, hammingDistances, maximumXFS, minimumXFS = familySizeDistributionWithHD(quant, ham,rel=False)
+            list1, maximumX, minimumX = hammingDistanceWithFS(quant, ham)  # histogram of HDs separated after FS
+            
             ## get FS for all tags with min HD of analysis of chimeric reads
             # there are more tags than sample size in the plot, because one tag can have multiple minimas
             seqDic = dict(zip(seq, quant))
@@ -869,35 +886,35 @@ def Hamming_Distance_Analysis(argv):
             ##################         plot Hamming Distance with Family size distribution         ##############################
             #####################################################################################################################
             plotHDwithFSD(list1=list1, maximumX=maximumX, minimumX=minimumX, pdf=pdf,
-                          subtitle="Overall hamming distance with separation after family size", title_file1=name_file,
+                          subtitle="Hamming distance separated by family size", title_file1=name_file,
                           lenTags=lenTags,xlabel="Hamming distance")
 
             ##########################       Plot FSD with separation after HD       ###############################################
             ########################################################################################################################
             plotFSDwithHD2(familySizeList1, maximumXFS, minimumXFS,
-                           quant=quant, subtitle="Family size distribution with separation after hamming distance",
+                           quant=quant, subtitle="Family size distribution separated by Hamming distance",
                            pdf=pdf,relative=False, title_file1=name_file, diff=False)
 
             ##########################       Plot difference between HD's separated after FSD       ##########################################
             ########################################################################################################################
             plotHDwithFSD(listDifference1, maximumXDifference, minimumXDifference, pdf=pdf,
-                          subtitle="Delta Hamming distances within tags with separation after family size",
+                          subtitle="Delta Hamming distance within tags",
                           title_file1=name_file, lenTags=lenTags,
-                          xlabel="absolute delta Hamming distance", relative=False)
+                          xlabel="abs delta Hamming distance", relative=False)
 
             plotHDwithFSD(listRelDifference1, maximumXRelDifference, minimumXRelDifference, pdf=pdf,
-                          subtitle="Relative delta Hamming distances within tags with separation after family size",
+                          subtitle="Relative delta Hamming distances within tags",
                           title_file1=name_file, lenTags=lenTags,
-                          xlabel="relative delta Hamming distance", relative=True)
+                          xlabel="rel delta Hamming distance", relative=True)
 
             ####################       Plot FSD separated after difference between HD's        #####################################
             ########################################################################################################################
             plotFSDwithHD2(familySizeList1_diff, maximumXFS_diff, minimumXFS_diff,
-                           subtitle="Family size distribution with separation after delta Hamming distances within the tags",
+                           subtitle="Family size distribution with delta Hamming distances within the tags",
                            pdf=pdf,relative=False, diff=True, title_file1=name_file, quant=quant)
 
             plotFSDwithHD2(familySizeList1_reldiff, maximumXFS_reldiff, minimumXFS_reldiff, quant=quant, pdf=pdf,
-                           subtitle="Family size distribution with separation after delta Hamming distances within the tags",
+                           subtitle="Family size distribution with delta Hamming distances within the tags",
                            relative=True, diff=True, title_file1=name_file)
 
            
@@ -905,15 +922,13 @@ def Hamming_Distance_Analysis(argv):
             if len(minHD_tags_zeros) != 0:
                 ## HD
                 plotHDwithFSD(listDifference1_zeros, maximumXDifference_zeros, minimumXDifference_zeros, pdf=pdf,
-                              subtitle="Hamming Distance of the non-identical half with separation after family size"
-                                       "\n(at least one half is identical with the half of the min. tag)\n",
+                              subtitle="Hamming distance of the non-identical half of chimeras",
                               title_file1=name_file, lenTags=lenTags,xlabel="Hamming distance", relative=False)
 
                 ## FSD
                 plotFSDwithHD2(familySizeList1_diff_zeros, maximumXFS_diff_zeros, minimumXFS_diff_zeros,
                                quant=quant, pdf=pdf,
-                               subtitle="Family size distribution with separation after hamming distances from the non-identical half\n"
-                                        "(at least one half is identical with the half of the min. tag)\n",
+                               subtitle="Family size distribution with Hamming distance from the non-identical half of chimeras",
                                relative=False, diff=False, title_file1=name_file)
 
             ### print all data to a CSV file
@@ -954,16 +969,16 @@ def Hamming_Distance_Analysis(argv):
                 summary23, sumCol23 = createTableFSD2(familySizeList1_diff_zeros, diff=False)
                 overallSum23 = sum(sumCol23)
 
-            output_file.write("{}\n".format(f))
+            output_file.write("{}\n".format(name_file))
             output_file.write("number of tags per file{}{:,} (from {:,}) against {:,}\n\n".format(sep, len(
                 numpy.concatenate(list1)), lenTags, lenTags))
 
             ### HD ###
             createFileHD(summary, sumCol, overallSum, output_file,
-                         "Hamming distance with separation after family size: file1", sep)
+                         "Hamming distance separated by family size", sep)
             ### FSD ###
             createFileFSD2(summary5, sumCol5, overallSum5, output_file,
-                           "Family size distribution with separation after hamming distances: file1", sep,
+                           "Family size distribution separated by Hamming distance", sep,
                            diff=False)
 
             count = numpy.bincount(quant)
@@ -978,31 +993,31 @@ def Hamming_Distance_Analysis(argv):
                 "The hamming distances were calculated by comparing each half of all tags against the tag(s) with the minimum Hamming distance per half.\n"
                 "It is possible that one tag can have the minimum HD from multiple tags, so the sample size in this calculation differs from the sample size entered by the user.\n")
             output_file.write(
-                "file 1: actual number of tags with min HD = {:,} (sample size by user = {:,})\n".format(
+                "actual number of tags with min HD = {:,} (sample size by user = {:,})\n".format(
                     len(numpy.concatenate(listDifference1)), len(numpy.concatenate(list1))))
             output_file.write("length of one part of the tag = {}\n\n".format(len(data_array[0, 1]) / 2))
 
             createFileHDwithinTag(summary9, sumCol9, overallSum9, output_file,
-                                  "Hamming distance of each half in the tag: file1", sep)
+                                  "Hamming distance of each half in the tag", sep)
             createFileHD(summary11, sumCol11, overallSum11, output_file,
-                         "Absolute delta Hamming distances within the tag: file1", sep)
+                         "Absolute delta Hamming distances within the tag", sep)
             createFileHD(summary13, sumCol13, overallSum13, output_file,
-                         "Relative delta Hamming distances within the tag: file1", sep)
+                         "Relative delta Hamming distances within the tag", sep)
 
             createFileFSD2(summary19, sumCol19, overallSum19, output_file,
-                           "Family size distribution with separation after absolute delta Hamming distances: file1",
+                           "Family size distribution separated by absolute delta Hamming distance",
                            sep)
             createFileFSD2(summary21, sumCol21, overallSum21, output_file,
-                           "Family size distribution with separation after relative delta Hamming distances: file1",
+                           "Family size distribution separated by relative delta Hamming distance",
                            sep, rel=True)
 
             if len(minHD_tags_zeros) != 0:
                 output_file.write(
-                    "All tags were filtered: only those tags where at least one half is identical with the half of the min. tag are kept.\nSo the hamming distance of the non-identical half is compared.\n")
+                    "Identifiaction of chimeric reads:\nAll tags were filtered: only those tags where at least one half is identical with the half of the min. tag are kept.\nSo the hamming distance of the non-identical half is compared.\n")
                 createFileHD(summary15, sumCol15, overallSum15, output_file,
-                             "Hamming distances of non-zero half: file1", sep)
+                             "Hamming distances of non-zero half", sep)
                 createFileFSD2(summary23, sumCol23, overallSum23, output_file,
-                               "Family size distribution with separation after Hamming distances of non-zero half: file1",
+                               "Family size distribution separated by Hamming distance of non-zero half",
                                sep, diff=False)
             output_file.write("\n")
 

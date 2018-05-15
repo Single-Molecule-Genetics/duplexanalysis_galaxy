@@ -157,8 +157,8 @@ def compare_read_families_refGenome(argv):
 
         plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
         plt.title(name1, fontsize=14)
-        plt.xlabel("No. of Family Members", fontsize=12)
-        plt.ylabel("Absolute Frequency", fontsize=12)
+        plt.xlabel("Family size", fontsize=14)
+        plt.ylabel("Absolute Frequency", fontsize=14)
         plt.grid(b=True, which="major", color="#424242", linestyle=":")
         plt.margins(0.01, None)
 
@@ -166,7 +166,7 @@ def compare_read_families_refGenome(argv):
         pdf.savefig(fig, bbox_inch="tight")
         plt.close()
 
-        output_file.write("Dataset:{}{}\n".format(sep, firstFile))
+        output_file.write("Dataset:{}{}\n".format(sep, name1))
         output_file.write("{}AB{}BA\n".format(sep, sep))
         output_file.write("max. family size:{}{}{}{}\n".format(sep, max(map(int, quant_ab)), sep, max(map(int, quant_ba))))
         output_file.write("absolute frequency:{}{}{}{}\n".format(sep, count[len(count) - 1], sep, count2[len(count2) - 1]))
