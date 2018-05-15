@@ -805,6 +805,9 @@ def Hamming_Distance_Analysis(argv):
 
             # HD analysis for chimeric reads
             proc_pool_b = Pool(nproc)
+            print(chunk_sample)
+            print(result2)
+            print(data_array)
             diff_list_a = proc_pool_b.map(partial(hamming_difference, array2=result2, mate_b=False), chunks_sample)
             diff_list_b = proc_pool_b.map(partial(hamming_difference, array2=result2, mate_b=True), chunks_sample)
             proc_pool_b.close()
