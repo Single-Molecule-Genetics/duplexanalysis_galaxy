@@ -30,7 +30,7 @@ import os
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import Counter
 
-def plotFSDwithHD2(familySizeList1,maximumXFS,minimumXFS, quant,
+def plotFSDwithHD2(familySizeList1,maximumXFS,minimumXFS, originalCounts,
                    title_file1, subtitle, pdf, relative=False, diff = True):
     if diff is False:
         colors = ["#e6194b", "#3cb44b", "#ffe119", "#0082c8", "#f58231", "#911eb4"]
@@ -78,9 +78,9 @@ def plotFSDwithHD2(familySizeList1,maximumXFS,minimumXFS, quant,
     legend = "\nmax. family size: \nabsolute frequency: \nrelative frequency: "
     plt.text(0.15, -0.08, legend, size=12, transform=plt.gcf().transFigure)
 
-    count = numpy.bincount(quant)  # original counts
+    count = numpy.bincount(originalCounts)  # original counts
     legend1 = "{}\n{}\n{:.5f}" \
-        .format(max(quant), count[len(count) - 1], float(count[len(count) - 1]) / sum(count))
+        .format(max(originalCounts), count[len(count) - 1], float(count[len(count) - 1]) / sum(count))
     plt.text(0.5, -0.08, legend1, size=12, transform=plt.gcf().transFigure)
     legend3 = "singletons\n{:,}\n{:.5f}".format(int(counts[0][len(counts[0]) - 1][1]),
                                                 float(counts[0][len(counts[0]) - 1][1]) / sum(
@@ -508,14 +508,14 @@ def hamming_difference(array1, array2, mate_b):
         i += 1
             
         #print(i)
-    diff11 = [st for st in diff11 if st != 999]
-    ham1 = [st for st in ham1 if st != 999]
-    ham2 = [st for st in ham2 if st != 999]
-    min_valueList = [st for st in min_valueList if st != 999]
-    min_tagsList = [st for st in min_tagsList if st != 999]
-    relativeDiffList = [st for st in relativeDiffList if st != 999]
-    diff11_zeros = [st for st in diff11_zeros if st != 999]
-    min_tagsList_zeros = [st for st in min_tagsList_zeros if st != 999]
+    #diff11 = [st for st in diff11 if st != 999]
+    #ham1 = [st for st in ham1 if st != 999]
+    #ham2 = [st for st in ham2 if st != 999]
+    #min_valueList = [st for st in min_valueList if st != 999]
+    #min_tagsList = [st for st in min_tagsList if st != 999]
+    #relativeDiffList = [st for st in relativeDiffList if st != 999]
+    #diff11_zeros = [st for st in diff11_zeros if st != 999]
+    #min_tagsList_zeros = [st for st in min_tagsList_zeros if st != 999]
 
     return ([diff11, ham1, ham2, min_valueList, min_tagsList, relativeDiffList, diff11_zeros, min_tagsList_zeros])
 
@@ -525,28 +525,28 @@ def readFileReferenceFree(file):
         integers = numpy.array(data_array[:, 0]).astype(int)
         return(integers, data_array)
 
-def hammingDistanceWithFS(quant, ham):
-    quant = numpy.asarray(quant)
+def hammingDistanceWithFS(fs, ham):
+    fs = numpy.asarray(fs)
     maximum = max(ham)
     minimum = min(ham)
     ham = numpy.asarray(ham)
 
-    singletons = numpy.where(quant == 1)[0]
+    singletons = numpy.where(fs == 1)[0]
     data = ham[singletons]
 
-    hd2 = numpy.where(quant == 2)[0]
+    hd2 = numpy.where(fs == 2)[0]
     data2 = ham[hd2]
 
-    hd3 = numpy.where(quant == 3)[0]
+    hd3 = numpy.where(fs == 3)[0]
     data3 = ham[hd3]
 
-    hd4 = numpy.where(quant == 4)[0]
+    hd4 = numpy.where(fs == 4)[0]
     data4 = ham[hd4]
 
-    hd5 = numpy.where((quant >= 5) & (quant <= 10))[0]
+    hd5 = numpy.where((fs >= 5) & (fs <= 10))[0]
     data5 = ham[hd5]
 
-    hd6 = numpy.where(quant > 10)[0]
+    hd6 = numpy.where(fs > 10)[0]
     data6 = ham[hd6]
 
     list1 = [data, data2, data3, data4, data5, data6]
@@ -884,7 +884,7 @@ def Hamming_Distance_Analysis(argv):
             ##########################       Plot FSD with separation after HD       ###############################################
             ########################################################################################################################
             plotFSDwithHD2(familySizeList1, maximumXFS, minimumXFS,
-                           quant=quant, subtitle="Family size distribution separated by Hamming distance",
+                           originalCounts=quant, subtitle="Family size distribution separated by Hamming distance",
                            pdf=pdf,relative=False, title_file1=name_file, diff=False)
 
             ##########################       Plot difference between HD's separated after FSD       ##########################################
@@ -903,9 +903,9 @@ def Hamming_Distance_Analysis(argv):
             ########################################################################################################################
             plotFSDwithHD2(familySizeList1_diff, maximumXFS_diff, minimumXFS_diff,
                            subtitle="Family size distribution separated by delta Hamming distances within the tags",
-                           pdf=pdf,relative=False, diff=True, title_file1=name_file, quant=quant)
+                           pdf=pdf,relative=False, diff=True, title_file1=name_file, originalCounts=quant)
 
-            plotFSDwithHD2(familySizeList1_reldiff, maximumXFS_reldiff, minimumXFS_reldiff, quant=quant, pdf=pdf,
+            plotFSDwithHD2(familySizeList1_reldiff, maximumXFS_reldiff, minimumXFS_reldiff, originalCounts=quant, pdf=pdf,
                            subtitle="Family size distribution separated by delta Hamming distances within the tags",
                            relative=True, diff=True, title_file1=name_file)
 
@@ -919,7 +919,7 @@ def Hamming_Distance_Analysis(argv):
 
                 ## FSD
                 plotFSDwithHD2(familySizeList1_diff_zeros, maximumXFS_diff_zeros, minimumXFS_diff_zeros,
-                               quant=quant, pdf=pdf,
+                               originalCounts=quant, pdf=pdf,
                                subtitle="Family size distribution separated by Hamming distance of the non-identical half of chimeras",
                                relative=False, diff=False, title_file1=name_file)
 
