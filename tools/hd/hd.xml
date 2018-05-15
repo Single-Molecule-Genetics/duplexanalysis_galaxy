@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="hd" name="Duplex Sequencing Analysis:" version="0.0.10">
+<tool id="hd" name="Duplex Sequencing Analysis:" version="0.0.11">
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>

@@ -24,11 +24,6 @@ import os.path
 import cPickle as pickle
 from multiprocessing.pool import Pool
 from functools import partial
-#from HDAnalysis_plots.plot_HDwithFSD import plotHDwithFSD
-#from HDAnalysis_plots.plot_FSDwithHD2 import plotFSDwithHD2
-#from HDAnalysis_plots.plot_HDwithinSeq_Sum2 import plotHDwithinSeq_Sum2
-#from HDAnalysis_plots.table_HD import createTableHD, createFileHD, createTableHDwithTags, createFileHDwithinTag
-#from HDAnalysis_plots.table_FSD import createTableFSD2, createFileFSD2
 import argparse
 import sys
 import os
@@ -168,7 +163,7 @@ def plotHDwithinSeq_Sum2(sum1, sum2,min_value, lenTags, title_file1, pdf):
 
     counts = plt.hist(ham, align="left", rwidth=0.8, stacked=False,
                       label=[ "HD a", "HD b","HD a+b"],
-                      bins=range1, color=["#585858", "#58ACFA", "#FA5858"], edgecolor='black', linewidth=1)
+                      bins=range1, color=[ "#58ACFA", "#FA5858","#585858"], edgecolor='black', linewidth=1)
     plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.55, 1))
     plt.suptitle('Hamming distances within tags', fontsize=14)
     #plt.title(title_file1, fontsize=12)
@@ -693,8 +688,8 @@ def Hamming_Distance_Analysis(argv):
 
     ### PLOT ###
     plt.rcParams['axes.facecolor'] = "E0E0E0"  # grey background color
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
+    plt.rcParams['xtick.labelsize'] = 14
+    plt.rcParams['ytick.labelsize'] = 14
     plt.rcParams['patch.edgecolor'] = "#000000"
     plt.rc('figure', figsize=(11.69, 8.27))  # A4 format
 
@@ -711,9 +706,6 @@ def Hamming_Distance_Analysis(argv):
         names = [name1]
         pdf_files = [title_savedFile_pdf]
         csv_files = [title_savedFile_csv]
-
-    print(type(onlyDuplicates))
-    print(onlyDuplicates)
 
     for f, name_file, pdf_f, csv_f in zip(files, names, pdf_files, csv_files):
         with open(csv_f, "w") as output_file, PdfPages(pdf_f) as pdf:
@@ -805,9 +797,6 @@ def Hamming_Distance_Analysis(argv):
 
             # HD analysis for chimeric reads
             proc_pool_b = Pool(nproc)
-            print(chunks_sample)
-            print(result2)
-            print(data_array)
             diff_list_a = proc_pool_b.map(partial(hamming_difference, array2=result2, mate_b=False), chunks_sample)
             diff_list_b = proc_pool_b.map(partial(hamming_difference, array2=result2, mate_b=True), chunks_sample)
             proc_pool_b.close()
@@ -903,21 +892,21 @@ def Hamming_Distance_Analysis(argv):
             plotHDwithFSD(listDifference1, maximumXDifference, minimumXDifference, pdf=pdf,
                           subtitle="Delta Hamming distance within tags",
                           title_file1=name_file, lenTags=lenTags,
-                          xlabel="abs delta Hamming distance", relative=False)
+                          xlabel="absolute delta Hamming distance", relative=False)
 
             plotHDwithFSD(listRelDifference1, maximumXRelDifference, minimumXRelDifference, pdf=pdf,
                           subtitle="Relative delta Hamming distances within tags",
                           title_file1=name_file, lenTags=lenTags,
-                          xlabel="rel delta Hamming distance", relative=True)
+                          xlabel="relative delta Hamming distance", relative=True)
 
             ####################       Plot FSD separated after difference between HD's        #####################################
             ########################################################################################################################
             plotFSDwithHD2(familySizeList1_diff, maximumXFS_diff, minimumXFS_diff,
-                           subtitle="Family size distribution with delta Hamming distances within the tags",
+                           subtitle="Family size distribution separated by delta Hamming distances within the tags",
                            pdf=pdf,relative=False, diff=True, title_file1=name_file, quant=quant)
 
             plotFSDwithHD2(familySizeList1_reldiff, maximumXFS_reldiff, minimumXFS_reldiff, quant=quant, pdf=pdf,
-                           subtitle="Family size distribution with delta Hamming distances within the tags",
+                           subtitle="Family size distribution separated by delta Hamming distances within the tags",
                            relative=True, diff=True, title_file1=name_file)
 
            
@@ -931,7 +920,7 @@ def Hamming_Distance_Analysis(argv):
                 ## FSD
                 plotFSDwithHD2(familySizeList1_diff_zeros, maximumXFS_diff_zeros, minimumXFS_diff_zeros,
                                quant=quant, pdf=pdf,
-                               subtitle="Family size distribution with Hamming distance from the non-identical half of chimeras",
+                               subtitle="Family size distribution separated by Hamming distance of the non-identical half of chimeras",
                                relative=False, diff=False, title_file1=name_file)
 
             ### print all data to a CSV file
