@@ -439,25 +439,25 @@ def hamming_difference(array1, array2, mate_b):
     array2_half = numpy.array([i[0:(len(i)) / 2] for i in array2]) # mate2 part1
     array2_half2 = numpy.array([i[len(i) / 2:len(i)] for i in array2])  # mate2 part2
 
-    diff11 = 999 * numpy.ones(len(array2))
-    relativeDiffList = 999 * numpy.ones(len(array2))
-    ham1 = 999 * numpy.ones(len(array2))
-    ham2 = 999 * numpy.ones(len(array2))
-    min_valueList = 999 * numpy.ones(len(array2))
-    min_tagsList = 999 * numpy.ones(len(array2))
-    diff11_zeros = 999 * numpy.ones(len(array2))
-    min_tagsList_zeros = 999 * numpy.ones(len(array2))
+    #diff11 = 999 * numpy.ones(len(array2))
+    #relativeDiffList = 999 * numpy.ones(len(array2))
+    #ham1 = 999 * numpy.ones(len(array2))
+    #ham2 = 999 * numpy.ones(len(array2))
+    #min_valueList = 999 * numpy.ones(len(array2))
+    #min_tagsList = 999 * numpy.ones(len(array2))
+    #diff11_zeros = 999 * numpy.ones(len(array2))
+    #min_tagsList_zeros = 999 * numpy.ones(len(array2))
     
     
-    #diff11 = []
-    #relativeDiffList = []
-    #ham1 = []
-    #ham2 = []
-    #min_valueList = []
-    #min_tagsList = []
-    #diff11_zeros = []
-    #min_tagsList_zeros = []
-    counter = 0 # counter, only used to see how many HDs of tags were already calculated
+    diff11 = []
+    relativeDiffList = []
+    ham1 = []
+    ham2 = []
+    min_valueList = []
+    min_tagsList = []
+    diff11_zeros = []
+    min_tagsList_zeros = []
+    i = 0 # counter, only used to see how many HDs of tags were already calculated
     if mate_b is False: # HD calculation for all a's
         half1_mate1 = array1_half
         half2_mate1 = array1_half2
@@ -496,22 +496,21 @@ def hamming_difference(array1, array2, mate_b):
             else:  # half1, corrects the variable of the HD from both halfs if it is a or b
                 d = d_1
                 d2 = d_2
-            min_valueList[counter] = d + d2
-            min_tagsList[counter] = tag
-            ham1[counter] = d
-            ham2[counter] = d2
+            min_valueList.append(d + d2)
+            min_tagsList.append(tag)
+            ham1.append.append(d)
+            ham2.append.append(d2)
             difference1 = abs(d - d2)
-            diff11[counter] = difference1
+            diff11.append(difference1)
             rel_difference = round(float(difference1) / (d + d2), 1)
-            relativeDiffList[counter] = rel_difference
+            relativeDiffList.append(rel_difference)
 
             #### tags which have identical parts:
             if d == 0 or d2 == 0:
-                min_tagsList_zeros[counter] = tag
+                min_tagsList_zeros.append(tag)
                 difference1_zeros = abs(d - d2)
-                diff11_zeros[counter] = difference1_zeros
-            
-            counter += 1
+                diff11_zeros.append(difference1_zeros)
+        i += 1
             
         #print(i)
     diff11 = [st for st in diff11 if st != 999]
@@ -712,6 +711,9 @@ def Hamming_Distance_Analysis(argv):
         names = [name1]
         pdf_files = [title_savedFile_pdf]
         csv_files = [title_savedFile_csv]
+
+    print(type(onlyDuplicates))
+    print(onlyDuplicates)
 
     for f, name_file, pdf_f, csv_f in zip(files, names, pdf_files, csv_files):
         with open(csv_f, "w") as output_file, PdfPages(pdf_f) as pdf:
