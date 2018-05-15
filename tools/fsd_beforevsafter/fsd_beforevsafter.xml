@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="fsd_beforevsafter" name="Duplex Sequencing Analysis:" version="0.0.4">
+<tool id="fsd_beforevsafter" name="Duplex Sequencing Analysis:" version="0.0.5">
     <requirements>
 		<!-- galaxy version 16.04 -->
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
-        <requirement type="package" version="1.7">biopython</requirement>
+        <requirement type="package" version="1.71">biopython</requirement>
         
     </requirements>
     <description>Family size distribution (FSD) of tags from various steps of the Du Novo pipeline</description>
