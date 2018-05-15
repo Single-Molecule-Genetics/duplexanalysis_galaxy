@@ -6,7 +6,7 @@
     </requirements>
     <description>Family size distribution (FSD) of aligned tags to reference genome</description>
     <command>
-        python2 $__tool_directory__/fsd_regions.py --inputFile "$file1" --inputName1 "$file1.name" --ref_genome "$file2" --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+        python2 $__tool_directory__/fsd_regions.py --inputFile "$file1" --inputName1 "$file1.name" --ref_genome "$file2" --sep $separator --output_pdf $output_pdf --output_csv $output_csv 
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family."/>
@@ -36,7 +36,8 @@
     | 28  | AAAAAAAAAAATGGTATGGACCGA   | ab |
     +-----+----------------------------+----+
     
-    In addition, a TXT file with the regions and all tags that were aligned to the reference genome is required. This file can obtained from a different tool.
+    
+	In addition, a TXT file with the regions and all tags that were aligned to the reference genome is required. 	This file can obtained from a different tool.
     
     +-----------+------------------------------+
     | 87_636    | AAATCAAAGTATGAATGAAGTTGCCT   |

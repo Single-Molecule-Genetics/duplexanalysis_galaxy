@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="hd" name="Duplex Sequencing Analysis:" version="0.0.12">
+<tool id="hd" name="Duplex Sequencing Analysis:" version="0.0.13">
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
     </requirements>
     <description>Hamming distance (HD) analysis of tags</description>
     <command>
-        python2 $__tool_directory__/hd.py --inputFile "$inputFile" --inputName1 "$inputFile.name" --inputFile2 "$inputFile2" --inputName2 "$inputFile2.name" --sample_size $sampleSize --sep $separator --subset_tag $subsetTag --nproc $nproc $onlyDCS --minFS $minFS --maxFS $maxFS --output_csv $output_csv --output_pdf $output_pdf 
+        python2 $__tool_directory__/hd.py --inputFile "$inputFile" --inputName1 "$inputFile.name" --inputFile2 "$inputFile2" --inputName2 "$inputFile2.name" --sample_size $sampleSize --sep $separator --subset_tag $subsetTag --nproc $nproc $onlyDCS --minFS $minFS --maxFS $maxFS --output_pdf $output_pdf --output_csv $output_csv 
         #if $inputFile2:
         --output_pdf2 $output_pdf2 --output_csv2 $output_csv2
         #end if

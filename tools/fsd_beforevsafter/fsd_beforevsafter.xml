@@ -9,7 +9,7 @@
     </requirements>
     <description>Family size distribution (FSD) of tags from various steps of the Du Novo pipeline</description>
     <command>
-        python2 $__tool_directory__/fsd_beforevsafter.py --inputFile_SSCS "$file1" --inputName1 "$file1.name" --makeDCS "$makeDCS" --afterTrimming "$afterTrimming" --alignedTags "$alignedTags" --sep $separator --output_csv $output_csv --output_pdf $output_pdf
+        python2 $__tool_directory__/fsd_beforevsafter.py --inputFile_SSCS "$file1" --inputName1 "$file1.name" --makeDCS "$makeDCS" --afterTrimming "$afterTrimming" --alignedTags "$alignedTags" --sep $separator --output_pdf $output_pdf --output_csv $output_csv 
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family."/>
@@ -58,6 +58,7 @@
     
     
     
+	
     **Dataset 4 (optional):** Finally, a TXT file with the regions and all tags that were aligned to the reference genome can be given as input. This file can obtained from a different tool.
 
     +-----------+------------------------------+

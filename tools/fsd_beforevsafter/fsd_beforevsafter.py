@@ -82,8 +82,8 @@ def compare_read_families_read_loss(argv):
         ### PLOT ###
         plt.rc('figure', figsize=(11.69, 8.27))  # A4 format
         plt.rcParams['axes.facecolor'] = "E0E0E0"  # grey background color
-        plt.rcParams['xtick.labelsize'] = 12
-        plt.rcParams['ytick.labelsize'] = 12
+        plt.rcParams['xtick.labelsize'] = 14
+        plt.rcParams['ytick.labelsize'] = 14
         plt.rcParams['patch.edgecolor'] = "black"
         fig = plt.figure()
         plt.subplots_adjust(bottom=0.3)

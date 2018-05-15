@@ -108,8 +108,8 @@ def compare_read_families_refGenome(argv):
         ### PLOT ###
         plt.rc('figure', figsize=(11.69, 8.27))  # A4 format
         plt.rcParams['axes.facecolor'] = "E0E0E0"  # grey background color
-        plt.rcParams['xtick.labelsize'] = 12
-        plt.rcParams['ytick.labelsize'] = 12
+        plt.rcParams['xtick.labelsize'] = 14
+        plt.rcParams['ytick.labelsize'] = 14
         plt.rcParams['patch.edgecolor'] = "black"
         fig = plt.figure()
         plt.subplots_adjust(bottom=0.3)
@@ -156,7 +156,7 @@ def compare_read_families_refGenome(argv):
             plt.text(0.75, 0.05 + s, "{:,}\n".format(len(count) / 2), size=11, transform=plt.gcf().transFigure)
 
         plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
-        plt.title(name1, fontsize=14)
+        #plt.title(name1, fontsize=14)
         plt.xlabel("Family size", fontsize=14)
         plt.ylabel("Absolute Frequency", fontsize=14)
         plt.grid(b=True, which="major", color="#424242", linestyle=":")

@@ -73,8 +73,8 @@ def compare_read_families(argv):
     plt.rc('figure', figsize=(11.69, 8.27))  # A4 format
     plt.rcParams['patch.edgecolor'] = "black"
     plt.rcParams['axes.facecolor'] = "E0E0E0"  # grey background color
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
+    plt.rcParams['xtick.labelsize'] = 14
+    plt.rcParams['ytick.labelsize'] = 14
 
     list_to_plot = []
     label = []
@@ -213,7 +213,7 @@ def compare_read_families(argv):
        plt.xticks(numpy.array(ticks), ticks1)
 
        plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(0.9, 1))
-       plt.title("Family Size Distribution", fontsize=14)
+     #  plt.title("Family Size Distribution", fontsize=14)
        plt.xlabel("Family size", fontsize=14)
        plt.ylabel("Absolute Frequency", fontsize=14)
        plt.margins(0.01, None)
@@ -321,7 +321,7 @@ def compare_read_families(argv):
             last = counts[0][2][len(counts[0][0]) - 1]  # large families
 
             plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
-            plt.title(name1, fontsize=14)
+         #   plt.title(name1, fontsize=14)
             plt.xlabel("Family size", fontsize=14)
             plt.ylabel("Absolute Frequency", fontsize=14)
             plt.margins(0.01, None)
