@@ -933,7 +933,7 @@ def Hamming_Distance_Analysis(argv):
             overallSum5 = sum(sumCol5)
 
             ### HD of both parts of the tag ####
-            summary9, sumCol9 = createTableHDwithTags([numpy.array(minHDs), HDhalf1, HDhalf2])
+            summary9, sumCol9 = createTableHDwithTags([HDhalf1, HDhalf2,numpy.array(minHDs)])
             overallSum9 = sum(sumCol9)
 
             ## HD

@@ -53,9 +53,9 @@ def make_argparser():
                         help='FASTA File with information about tag and family size in the header.')
     parser.add_argument('--alignedTags',default=None,
                         help=' TXT file with tags aligned to the reference genome and family size.')
-    parser.add_argument('--output_csv', default="data.csv", type=str,
-                        help='Name of the pdf and csv file.')
     parser.add_argument('--output_pdf', default="data.pdf", type=str,
+                        help='Name of the pdf and csv file.')
+    parser.add_argument('--output_csv', default="data.csv", type=str,
                         help='Name of the pdf and csv file.')
     parser.add_argument('--sep', default=",",
                         help='Separator in the csv file.')

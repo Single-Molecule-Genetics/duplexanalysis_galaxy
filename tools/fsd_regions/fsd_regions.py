@@ -31,9 +31,9 @@ def make_argparser():
     parser.add_argument('--inputName1')
     parser.add_argument('--ref_genome',
                         help='TXT File with tags of reads that overlap the region.')
-    parser.add_argument('--output_csv', default="data.csv", type=str,
-                        help='Name of the pdf and csv file.')
     parser.add_argument('--output_pdf', default="data.pdf", type=str,
+                       help='Name of the pdf and csv file.')
+    parser.add_argument('--output_csv', default="data.csv", type=str,
                         help='Name of the pdf and csv file.')
     parser.add_argument('--sep', default=",",
                         help='Separator in the csv file.')
