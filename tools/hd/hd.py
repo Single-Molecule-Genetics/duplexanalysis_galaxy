@@ -498,8 +498,8 @@ def hamming_difference(array1, array2, mate_b):
                 d2 = d_2
             min_valueList.append(d + d2)
             min_tagsList.append(tag)
-            ham1.append.append(d)
-            ham2.append.append(d2)
+            ham1.append(d)
+            ham2.append(d2)
             difference1 = abs(d - d2)
             diff11.append(difference1)
             rel_difference = round(float(difference1) / (d + d2), 1)
