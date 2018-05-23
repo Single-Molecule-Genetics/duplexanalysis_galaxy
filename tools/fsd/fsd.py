@@ -244,6 +244,7 @@ def compare_read_families(argv):
                for n in range(len(label)):
                    output_file.write("{}{}".format(int(counts[0][n][j]), sep))
            #        values_of_fs.append(int(counts[0][n][j]))
+           output_file.write("\n")
            #output_file.write("{}\n".format(sum(values_of_fs)))
            j += 1
        output_file.write("sum{}".format(sep))
