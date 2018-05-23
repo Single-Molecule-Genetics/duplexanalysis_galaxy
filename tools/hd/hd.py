@@ -180,7 +180,7 @@ def plotHDwithinSeq_Sum2(sum1, sum2,sum1min, sum2min, min_value, lenTags, title_
 
     plt.axis((minimumX - 1, maximumX + 1, 0, maximumY * 1.1))
     plt.xticks(numpy.arange(0, maximumX + 1, 1.0))
-    plt.ylim((0, maximumY * 1.1))
+    plt.ylim((0, maximumY * 1.2))
 
     legend = "sample size= {:,} against {:,}".format(len(ham[0]), lenTags, lenTags)
     plt.text(0.14, -0.01, legend, size=12, transform=plt.gcf().transFigure)
@@ -906,7 +906,7 @@ def Hamming_Distance_Analysis(argv):
             ##########################       Plot HD within tags          ########################################################
             ######################################################################################################################
            # plotHDwithinSeq_Sum2(HDhalf1, HDhalf2, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
-            plotHDwithinSeq_Sum2(HDhalf1, HDhalf1min,HDhalf2min, HDhalf2 , minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
+            plotHDwithinSeq_Sum2(HDhalf1, HDhalf1min,HDhalf2, HDhalf2min , minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
             
             
             ##########################       Plot difference between HD's separated after FSD ####################################

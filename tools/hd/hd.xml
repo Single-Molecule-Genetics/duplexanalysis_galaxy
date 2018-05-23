@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="hd" name="Duplex Sequencing Analysis: hd" version="0.0.16">
+<tool id="hd" name="Duplex Sequencing Analysis: hd" version="0.0.17">
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
@@ -22,7 +22,7 @@
         <param name="onlyDCS" type="boolean" label="only DCS in the analysis?" truevalue="" falsevalue="--only_DCS" checked="False" help="Only tags, which have a partner tag in the dataset, are included in the analysis."/>
         <param name="subsetTag" type="integer" label="shorten tag in the analysis?" value="0" help="An analysis with shorter tag length, which is specified by this parameter, is simulated. If this parameter is 0 (by default), the tag with its original length is used in the analysis."/>
         <param name="nproc" type="integer" label="number of processors" value="8" help="Number of processor used for computing."/>
-        <param name="nr_above_bars" type="boolean" label="include numbers above bars?" truevalue="--nr_above_bars" falsevalue="" checked="False" help="The absolute and relative values of the bar can be included or removed in the plot. "/>
+        <param name="nr_above_bars" type="boolean" label="include numbers above bars?" truevalue="--nr_above_bars" falsevalue="" checked="True" help="The absolute and relative values of the bar can be included or removed in the plot. "/>
  
     </inputs>
     <outputs>
