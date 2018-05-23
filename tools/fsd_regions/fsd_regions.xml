@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="fsd_regions" name="Duplex Sequencing Analysis:" version="0.0.3">
+<tool id="fsd_regions" name="Duplex Sequencing Analysis: fsd_regions" version="0.0.4">
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
     </requirements>
-    <description>Family size distribution (FSD) of aligned tags to reference genome</description>
+    <description>Family size distribution (FSD) of user-specified regions</description>
     <command>
         python2 $__tool_directory__/fsd_regions.py --inputFile "$file1" --inputName1 "$file1.name" --ref_genome "$file2" --sep $separator --output_pdf $output_pdf --output_csv $output_csv 
     </command>

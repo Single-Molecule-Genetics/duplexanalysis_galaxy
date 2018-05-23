@@ -121,7 +121,7 @@ def compare_read_families_read_loss(argv):
         duplTags_double = quant[numpy.in1d(seq, d)]
         list1.append(duplTags_double)
         colors.append("#0000FF")
-        labels.append("before alignment\nto SSCS")
+        labels.append("before SSCS building")
 
         duplTags = duplTags_double[0::2]  # ab of DCS
         duplTagsBA = duplTags_double[1::2]  # ba of DCS
@@ -133,7 +133,7 @@ def compare_read_families_read_loss(argv):
         seq_unique_FS = quant[seqUnique_index]
         seq_unique_FS3 = seq_unique_FS[seq_unique_FS >= 3]
 
-        legend1 = "\ntotal nr. of tags (unique, FS>=1):\nDCS (before alignment to SSCS, FS>=1):\ntotal nr. of tags (unique, FS>=3):\nDCS (before alignment to SSCS, FS>=3):"
+        legend1 = "\ntotal nr. of tags (unique, FS>=1):\nDCS (before SSCS building, FS>=1):\ntotal nr. of tags (unique, FS>=3):\nDCS (before SSCS building, FS>=3):"
         legend2 = "total numbers * \n{:,}\n{:,}\n{:,}\n{:,}".format(len(seq_unique_FS), len(duplTags),
                                                                     len(seq_unique_FS3), len(d2))
         plt.text(0.55, 0.14, legend1, size=11, transform=plt.gcf().transFigure)
@@ -146,8 +146,8 @@ def compare_read_families_read_loss(argv):
         fs_consensus[bigFamilies] = 22
         list1.append(fs_consensus)
         colors.append("#298A08")
-        labels.append("make DCS")
-        legend3 = "make DCS:"
+        labels.append("after DCS building")
+        legend3 = "after DCS building:"
         legend4 = "{:,}".format(len(tag_consensus))
         plt.text(0.55, 0.11, legend3, size=11, transform=plt.gcf().transFigure)
         plt.text(0.88, 0.11, legend4, size=11, transform=plt.gcf().transFigure)
@@ -187,8 +187,8 @@ def compare_read_families_read_loss(argv):
             quant_all_ref[bigFamilies] = 22
             list1.append(quant_all_ref)
             colors.append("#04cec7")
-            labels.append("after alignment\nto reference genome")
-            legend7 = "after alignment to reference genome:"
+            labels.append("after alignment\nto reference")
+            legend7 = "after alignment to reference:"
             length_DCS_ref = len(quant_ba_ref)  # count of duplex tags that were aligned to reference genome
             legend8 = "{:,}".format(length_DCS_ref)
             plt.text(0.55, 0.07, legend7, size=11, transform=plt.gcf().transFigure)
@@ -249,10 +249,10 @@ def compare_read_families_read_loss(argv):
         if afterTrimming == str(None) and ref_genome == str(None):
             if afterTrimming == str(None):
                 output_file.write(
-                "{}before alignment to SSCS{}make DCS\n".format(sep, sep))
+                "{}before SSCS buidling{}after DCS building\n".format(sep, sep))
             elif ref_genome == str(None):
                 output_file.write(
-                    "{}before alignment to SSCS{}make DCS\n".format(sep, sep))
+                    "{}before SSCS building{}atfer DCS building\n".format(sep, sep))
 
             for fs, sscs, dcs in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])],
                                                       counts[0][1][2:len(counts[0][1])]):
@@ -268,10 +268,10 @@ def compare_read_families_read_loss(argv):
         elif afterTrimming == str(None) or ref_genome == str(None):
             if afterTrimming == str(None):
                 output_file.write(
-                "{}before alignment to SSCS{}make DCS{}after alignment to reference genome\n".format(sep, sep, sep))
+                "{}before SSCS buidling{}after DCS building{}after alignment to reference\n".format(sep, sep, sep))
             elif ref_genome == str(None):
                 output_file.write(
-                    "{}before alignment to SSCS{}make DCS{}after trimming\n".format(sep, sep, sep))
+                    "{}before SSCS building{}atfer DCS building{}after trimming\n".format(sep, sep, sep))
 
             for fs, sscs, dcs, reference in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])],
                                                       counts[0][1][2:len(counts[0][1])],counts[0][2][2:len(counts[0][2])]):
@@ -286,7 +286,7 @@ def compare_read_families_read_loss(argv):
 
         else:
             output_file.write(
-                "{}before alignment to SSCS{}make DCS{}after trimming{}after alignment to reference genome\n".format(
+                "{}before SSCS building{}after DCS building{}after trimming{}after alignment to reference\n".format(
                     sep, sep, sep, sep))
             for fs, sscs, dcs, trim, reference in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])],
                                                       counts[0][1][2:len(counts[0][1])],
@@ -305,14 +305,14 @@ def compare_read_families_read_loss(argv):
 
         output_file.write("\n\nIn the plot, the family sizes of ab and ba strands and of both duplex tags were used.\nWhereas the total numbers indicate only the single count of the formed duplex tags.\n")
         output_file.write("total nr. of tags (unique, FS>=1){}{}\n".format(sep, len(seq_unique_FS)))
-        output_file.write("DCS (before alignment to SSCS, FS>=1){}{}\n".format(sep, len(duplTags)))
+        output_file.write("DCS (before SSCS building, FS>=1){}{}\n".format(sep, len(duplTags)))
         output_file.write("total nr. of tags (unique, FS>=3){}{}\n".format(sep, len(seq_unique_FS3)))
-        output_file.write("DCS (before alignment to SSCS, FS>=3){}{}\n".format(sep, len(d2)))
-        output_file.write("make DCS{}{}\n".format(sep, len(tag_consensus)))
+        output_file.write("DCS (before SSCS building, FS>=3){}{}\n".format(sep, len(d2)))
+        output_file.write("after DCS building{}{}\n".format(sep, len(tag_consensus)))
         if afterTrimming != str(None):
             output_file.write("after trimming{}{}\n".format(sep, len(tag_trimming)))
         if ref_genome != str(None):
-            output_file.write("after alignment to reference genome{}{}\n".format(sep, length_DCS_ref))
+            output_file.write("after alignment to reference{}{}\n".format(sep, length_DCS_ref))
 
         print("Files successfully created!")
 
