@@ -906,7 +906,7 @@ def Hamming_Distance_Analysis(argv):
             ##########################       Plot HD within tags          ########################################################
             ######################################################################################################################
            # plotHDwithinSeq_Sum2(HDhalf1, HDhalf2, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
-            plotHDwithinSeq_Sum2(HDhalf1, HDhalf2, HDhalf1min, HDhalf2min, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
+            plotHDwithinSeq_Sum2(HDhalf1, HDhalf1min,HDhalf2min, HDhalf2 , minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
             
             
             ##########################       Plot difference between HD's separated after FSD ####################################
