@@ -977,7 +977,7 @@ def Hamming_Distance_Analysis(argv):
             # chimeric reads
             if len(minHD_tags_zeros) != 0:
                 # absolute difference and tags where at least one half has HD=0
-                summary15, sumCol15 = createTableHD(listDifference1_zeros, "diff=")
+                summary15, sumCol15 = createTableHD(listDifference1_zeros, "HD=")
                 overallSum15 = sum(sumCol15)
                 # absolute difference and tags where at least one half has HD=0
            #     summary23, sumCol23 = createTableFSD2(familySizeList1_diff_zeros, diff=False)
@@ -996,7 +996,8 @@ def Hamming_Distance_Analysis(argv):
                            diff=False)
 
             count = numpy.bincount(quant)
-            output_file.write("{}{}\n".format(sep, f))
+            #output_file.write("{}{}\n".format(sep, name_file))
+            output_file.write("\n")
             output_file.write("max. family size:{}{}\n".format(sep, max(quant)))
             output_file.write("absolute frequency:{}{}\n".format(sep, count[len(count) - 1]))
             output_file.write(
