@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- galaxy version 16.04 -->
-<tool id="fsd" name="Duplex Sequencing Analysis: fsd" version="0.0.13">
+<tool id="fsd" name="Duplex Sequencing Analysis: fsd" version="0.0.14">
     <description>Family size distribution (FSD) of tags</description>
     <requirements>
         <requirement type="package" version="2.7">python</requirement>

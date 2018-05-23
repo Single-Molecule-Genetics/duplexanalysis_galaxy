@@ -227,7 +227,7 @@ def compare_read_families(argv):
        output_file.write("\nFamily size")
        for i in label:
            output_file.write("{}{}".format(sep, i))
-       output_file.write("{}sum".format(sep))
+      # output_file.write("{}sum".format(sep))
        output_file.write("\n")
        j = 0
        for fs in counts[1][0:len(counts[1]) - 1]:
@@ -236,15 +236,15 @@ def compare_read_families(argv):
            else:
                fs = "={}".format(fs)
            output_file.write("FS{}{}".format(fs, sep))
-           values_of_fs = []
+          # values_of_fs = []
            if len(label) == 1:
                output_file.write("{}{}".format(int(counts[0][j]), sep))
-               values_of_fs.append(int(counts[0][j]))
+           #    values_of_fs.append(int(counts[0][j]))
            else:
                for n in range(len(label)):
                    output_file.write("{}{}".format(int(counts[0][n][j]), sep))
-                   values_of_fs.append(int(counts[0][n][j]))
-           output_file.write("{}\n".format(sum(values_of_fs)))
+           #        values_of_fs.append(int(counts[0][n][j]))
+           #output_file.write("{}\n".format(sum(values_of_fs)))
            j += 1
        output_file.write("sum{}".format(sep))
        values_for_sum = []
