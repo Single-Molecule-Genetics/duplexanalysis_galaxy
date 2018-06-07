@@ -27,6 +27,4 @@ requirements:
 
 about:
   home: https://github.com/monikaheinzl/galaxyProject
-  license: GPLv2
-  license_file: LICENSE.txt
   summary: "Duplex Sequencing Analysis: Tools for analysing duplex sequencing data."
