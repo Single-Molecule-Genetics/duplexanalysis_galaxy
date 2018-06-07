@@ -3,7 +3,7 @@
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
-        <requirement type="package" version="0.0.1">duplexAnalysis</requirement>
+        <requirement type="package" version="0.0.1">duplexanalysis</requirement>
 		
     </requirements>
     <description>Hamming distance (HD) analysis of tags</description>
