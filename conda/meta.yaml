@@ -6,7 +6,7 @@ package:
   
 source:
   fn: duplexanalysis-{{ version }}.tar.gz
-  url: https://pypi.org/packages/source/p/duplexanalysis/duplexanalysis-{{ version }}.tar.gz
+  url: http://pypi.org/packages/source/p/duplexanalysis/duplexanalysis-{{ version }}.tar.gz
   sha256: f0a98bd455b7c84f54df325caa7d94e54d8125267e19e6bf11a1c66909c030a8
   
 build:
