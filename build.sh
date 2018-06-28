@@ -1,7 +1,1 @@
-#!/bin/bash
-
-# Move scripts to lib and link to them from bin.
-for script in *.py; do
-  mv utils/$script $PREFIX/lib
-  ln -s ../lib/$script $PREFIX/bin
-done
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt  # Python command to install the script.

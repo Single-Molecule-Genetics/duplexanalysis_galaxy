@@ -5,7 +5,8 @@ package:
   version: {{ version }}
   
 source:
-  git_url: https://github.com/monikaheinzl/galaxyProject.git
+  fn: duplexanalysis-{{ version }}.tar.gz
+  url: https://pypi.org/project/duplexanalysis/duplexanalysis-{{ version }}.tar.gz
   
 build:
   number: 0
@@ -13,16 +14,10 @@ build:
 
 requirements:
   build:
-    - make
-    - gcc
     - python
-    - wget
 
   run:
-    - libgcc
     - python
-    - paste
-    - gawk
 
 about:
   home: https://github.com/monikaheinzl/galaxyProject
