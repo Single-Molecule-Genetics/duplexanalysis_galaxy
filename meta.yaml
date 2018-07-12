@@ -15,7 +15,7 @@ source:
 
 build:
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  skip: True  # [not py27]
 
 requirements:
   host:
@@ -23,10 +23,6 @@ requirements:
     - setuptools
   run:
     - python
-
-test:
-  imports:
-    - duplexanalysis
 
 about:
   home: https://github.com/monikaheinzl/duplexanalysis
