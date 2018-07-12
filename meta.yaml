@@ -6,8 +6,8 @@ package:
   
 source:
   fn: duplexanalysis-{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/source/n/duplexanalysis/duplexanalysis-{{ version }}.tar.gz
-  md5: f0a98bd455b7c84f54df325caa7d94e54d8125267e19e6bf11a1c66909c030a8
+  url: https://pypi.python.org/packages/source/a/duplexanalysis/duplexanalysis-{{ version }}.tar.gz
+  sha256: f0a98bd455b7c84f54df325caa7d94e54d8125267e19e6bf11a1c66909c030a8
   
   
 build:
@@ -23,5 +23,5 @@ requirements:
     - python
 
 about:
-  home: https://github.com/monikaheinzl/galaxyProject
+  home: https://github.com/monikaheinzl/duplexanalysis
   summary: "Duplex Sequencing Analysis: Tools for analysing duplex sequencing data."
