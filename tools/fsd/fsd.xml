@@ -5,12 +5,10 @@
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
-        <requirement type="package" version="0.0.1">duplexanalysis</requirement>
-		
     </requirements>
     
     <command>
-        fsd.py --inputFile1 "$file1" --inputName1 "$file1.name" --inputFile2 "$file2" --inputName2 "$file2.name" --inputFile3 "$file3" --inputName3 "$file3.name" --inputFile4 "$file4" --inputName4 "$file4.name" --sep $separator --output_pdf $output_pdf --output_csv $output_csv 
+        python2 $__tool_directory__/fsd.py --inputFile1 "$file1" --inputName1 "$file1.name" --inputFile2 "$file2" --inputName2 "$file2.name" --inputFile3 "$file3" --inputName3 "$file3.name" --inputFile4 "$file4" --inputName4 "$file4.name" --sep $separator --output_pdf $output_pdf --output_csv $output_csv 
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>

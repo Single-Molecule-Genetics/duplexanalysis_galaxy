@@ -3,10 +3,12 @@
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4">matplotlib</requirement>
+        <requirement type="package" version="0.0.2">duplexanalysis</requirement>
+		
     </requirements>
     <description>Family size distribution (FSD) of user-specified regions</description>
     <command>
-        python2 $__tool_directory__/fsd_regions.py --inputFile "$file1" --inputName1 "$file1.name" --ref_genome "$file2" --sep $separator --output_pdf $output_pdf --output_csv $output_csv 
+        fsd_regions.py --inputFile "$file1" --inputName1 "$file1.name" --ref_genome "$file2" --sep $separator --output_pdf $output_pdf --output_csv $output_csv 
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags of whole dataset" optional="false" help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family."/>
