@@ -21,7 +21,7 @@
         <data name="output_pdf" format="pdf" />
         <data name="output_csv" format="csv"/>
     </outputs>
-    <!--  <tests>
+    <tests>
         <test>
             <param name="file1" value="Test_data.tabular"/>
             <param name="file2" value="None"/>
@@ -31,7 +31,6 @@
             <output name="output_csv" file="output_file.csv"/>
         </test>
     </tests>
-    -->
     <help> <![CDATA[
 
 **What it does**
