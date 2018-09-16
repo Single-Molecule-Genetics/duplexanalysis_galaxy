@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- galaxy version 16.04 -->
-<tool id="fsd" name="Duplex Sequencing Analysis: fsd" version="0.0.15">
+<tool id="fsd" name="Duplex Sequencing Analysis: fsd" version="1.0.0">
     <description>Family size distribution (FSD) of tags</description>
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
-        <requirement type="package" version="1.4">matplotlib</requirement>
+        <requirement type="package" version="1.4.0">matplotlib</requirement>
     </requirements>
     
     <command>
@@ -24,10 +24,11 @@
     <tests>
         <test>
             <param name="file1" value="Test_data.tabular"/>
-            <param name="file2" value="None"/>
-            <param name="file3" value="None"/>
-            <param name="file4" value="None"/>
-            <output name="output_pdf" file="output_file.pdf"/>
+            <param name="file2" value="Test_data2.tabular"/>
+            <param name="file3" value="Test_data3.tabular"/>
+            <param name="file4" value="Test_data4.tabular"/>
+            <param name="separator" value=","/>
+            <output name="output_pdf" file="output_file.pdf" lines_diff="6"/>
             <output name="output_csv" file="output_file.csv"/>
         </test>
     </tests>
@@ -35,7 +36,7 @@
 
 **What it does**
         
-    This tool will create a distribution of family sizes of each tag, which is separated after families tags that have only the forward (ab) strand, the reverse (ba) strand or both strands (ab+ba) of the DCS and a family size distribution without separation is created. If multiple files are provided as input, the family size distribution without separation contains all datasets in one plot and for each dataset a distribution with separation after single ab, ba strands and DCSs is produced.
+    This tool will create a distribution of family sizes of each tag, which is separated after tags that have only the forward (ab) strand, the reverse (ba) strand or both strands (ab+ba) of the DCS and a family size distribution without separation is created. 
                
         
 **Input**
@@ -58,7 +59,7 @@
       
 **Output**
         
-    The output is a PDF file with the plot and a CSV with the data of the plot.
+    The output is a PDF file with the plot and a CSV file with the data of the plot.
         
         
 **About Author**

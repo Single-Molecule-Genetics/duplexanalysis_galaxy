@@ -147,29 +147,30 @@ def plotHDwithFSD(list1,maximumX,minimumX, subtitle, lenTags, title_file1,pdf,
     plt.close("all")
     plt.clf()
 
-def plotHDwithinSeq_Sum2(sum1, sum2,sum1min, sum2min, min_value, lenTags, title_file1, pdf):
+def plotHDwithinSeq_Sum2(sum1, sum1min, sum2, sum2min, min_value, lenTags, title_file1, pdf):
     fig = plt.figure(figsize=(6, 8))
     plt.subplots_adjust(bottom=0.1)
 
     #ham = [sum1, sum2,numpy.array(min_value)]  # new hd within tags
-    ham = [sum1, sum2, sum1min, sum2min, numpy.array(min_value)]  # new hd within tags
+    ham_partial = [sum1, sum1min, sum2, sum2min, numpy.array(min_value)]  # new hd within tags
     
 
-    maximumX = numpy.amax(numpy.concatenate(ham))
-    minimumX = numpy.amin(numpy.concatenate(ham))
-    maximumY = numpy.amax(numpy.concatenate(map(lambda (x): numpy.bincount(x), ham)))
-
+    maximumX = numpy.amax(numpy.concatenate(ham_partial))
+    minimumX = numpy.amin(numpy.concatenate(ham_partial))
+    maximumY = numpy.amax(numpy.array(numpy.concatenate(map(lambda (x): numpy.bincount(x), ham_partial))))
+    
     if len(range(minimumX, maximumX)) == 0:
         range1 = minimumX
     else:
         range1 = range(minimumX, maximumX + 2)
 
-    counts = plt.hist(ham, align="left", rwidth=0.8, stacked=False,
+    counts = plt.hist(ham_partial, align="left", rwidth=0.8, stacked=False,
                      # label=[ "HD a", "HD b","HD a+b"],
-                     label=[ "HD a","HD b'", "HD b", "HD a'", "HD a+b"],
+                     label=[ "HD a","HD b'", "HD b", "HD a'", "HD a+b"],bins = range1,
                       #bins=range1, color=[ "#58ACFA", "#FA5858","#585858"],
                       color=["#58ACFA", "#0404B4", "#FE642E", "#B40431", "#585858"],
-                       edgecolor='black', linewidth=1)
+                       edgecolor='black', linewidth=1)                       
+                       
     plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.55, 1))
     plt.suptitle('Hamming distances within tags', fontsize=14)
     #plt.title(title_file1, fontsize=12)
@@ -177,12 +178,11 @@ def plotHDwithinSeq_Sum2(sum1, sum2,sum1min, sum2min, min_value, lenTags, title_
     plt.ylabel("Absolute Frequency", fontsize=14)
     plt.grid(b=True, which='major', color='#424242', linestyle=':')
 
-
-    plt.axis((minimumX - 1, maximumX + 1, 0, maximumY * 1.1))
+    plt.axis((minimumX - 1, maximumX + 1, 0, maximumY * 1.2))
     plt.xticks(numpy.arange(0, maximumX + 1, 1.0))
-    plt.ylim((0, maximumY * 1.2))
-
-    legend = "sample size= {:,} against {:,}".format(len(ham[0]), lenTags, lenTags)
+    #plt.ylim(0, maximumY * 1.2)
+        
+    legend = "sample size= {:,} against {:,}".format(sum(ham_partial[4]), lenTags)
     plt.text(0.14, -0.01, legend, size=12, transform=plt.gcf().transFigure)
     pdf.savefig(fig, bbox_inches="tight")
     plt.close("all")
@@ -348,7 +348,7 @@ def createTableHDwithTags(list1):
     selfAB = numpy.concatenate(list1)
     uniqueHD = numpy.unique(selfAB)
     nr = numpy.arange(0, len(uniqueHD), 1)
-    count = numpy.zeros((len(uniqueHD), 3))
+    count = numpy.zeros((len(uniqueHD), 5))
 
     state = 1
     for i in list1:
@@ -370,12 +370,22 @@ def createTableHDwithTags(list1):
                     for j in table:
                         if j[0] == uniqueHD[l]:
                             count[l, 1] = j[1]
-
             if state == 3:
                 for i, l in zip(uniqueHD, nr):
                     for j in table:
                         if j[0] == uniqueHD[l]:
                             count[l, 2] = j[1]
+            if state == 4:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 3] = j[1]
+            if state == 5:
+                for i, l in zip(uniqueHD, nr):
+                    for j in table:
+                        if j[0] == uniqueHD[l]:
+                            count[l, 4] = j[1]
+                        
             state = state + 1
 
         sumRow = count.sum(axis=1)
@@ -406,7 +416,7 @@ def createFileHD(summary, sumCol, overallSum, output_file, name,sep):
 def createFileHDwithinTag(summary, sumCol, overallSum, output_file, name,sep):
     output_file.write(name)
     output_file.write("\n")
-    output_file.write("{}HD a+b;HD a{}HD b{}sum{}\n".format(sep,sep,sep,sep))
+    output_file.write("{}HD a{}HD b'{}HD b{}HD a'{}HD a+b{}sum{}\n".format(sep,sep,sep,sep,sep,sep,sep))
     for item in summary:
         for nr in item:
             if "HD" not in nr:
@@ -492,15 +502,15 @@ def hamming_difference(array1, array2, mate_b):
 
         dist2 = numpy.array([sum(itertools.imap(operator.ne, b, e)) for e in
                              min_tag_half2])  # calculate HD of "b" to all "b's" or "a" to all "a's"
-        for d_1, d_2 in zip(min_value, dist2):
+        for d, d2 in zip(min_value, dist2):
             if mate_b is True:  # half2, corrects the variable of the HD from both halfs if it is a or b
-                d = d_2
-                d2 = d_1
+                #d = d_2
+                #d2 = d_1
                 ham2.append(d)
                 ham2min.append(d2)
             else:  # half1, corrects the variable of the HD from both halfs if it is a or b
-                d = d_1
-                d2 = d_2
+                #d = d_1
+                #d2 = d_2
                 ham1.append(d)
                 ham1min.append(d2)
                 
@@ -906,7 +916,7 @@ def Hamming_Distance_Analysis(argv):
             ##########################       Plot HD within tags          ########################################################
             ######################################################################################################################
            # plotHDwithinSeq_Sum2(HDhalf1, HDhalf2, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
-            plotHDwithinSeq_Sum2(HDhalf1, HDhalf1min, HDhalf2min , HDhalf2, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
+            plotHDwithinSeq_Sum2(HDhalf1, HDhalf1min , HDhalf2, HDhalf2min, minHDs, pdf=pdf, lenTags=lenTags, title_file1=name_file)
             
             
             ##########################       Plot difference between HD's separated after FSD ####################################
@@ -955,7 +965,7 @@ def Hamming_Distance_Analysis(argv):
             overallSum5 = sum(sumCol5)
 
             ### HD of both parts of the tag ####
-            summary9, sumCol9 = createTableHDwithTags([HDhalf1, HDhalf2,numpy.array(minHDs)])
+            summary9, sumCol9 = createTableHDwithTags([HDhalf1, HDhalf1min, HDhalf2,HDhalf2min,numpy.array(minHDs)])
             overallSum9 = sum(sumCol9)
 
             ## HD
