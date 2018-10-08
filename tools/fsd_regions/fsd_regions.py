@@ -8,36 +8,35 @@
 # Takes at least one TABULAR file with tags before the alignment to the SSCS
 # and a TXT with tags of reads that overlap the regions of the reference genome as input.
 # The program produces a plot which shows the distribution of family sizes of the tags from the input files and
-# a CSV file with the data of the plot.
+# a tabular file with the data of the plot.
 
-# USAGE: python FSD_regions_1.6_FINAL.py --inputFile filenameSSCS --inputName1 filenameSSCS --ref_genome  filenameRefGenome --sep "characterWhichSeparatesCSVFile" --output_csv outptufile_name_csv --output_pdf outptufile_name_pdf
+# USAGE: python FSD_regions_1.6_FINAL.py --inputFile filenameSSCS --inputName1 filenameSSCS --ref_genome  filenameRefGenome --output_tabular outptufile_name_tabular --output_pdf outptufile_name_pdf
 
-import numpy
-import matplotlib.pyplot as plt
 import argparse
 import sys
-import os
+
+import matplotlib.pyplot as plt
+import numpy
 from matplotlib.backends.backend_pdf import PdfPages
+
+plt.switch_backend('agg')
+
 
 def readFileReferenceFree(file, delim):
     with open(file, 'r') as dest_f:
         data_array = numpy.genfromtxt(dest_f, skip_header=0, delimiter=delim, comments='#', dtype='string')
         return(data_array)
 
+
 def make_argparser():
     parser = argparse.ArgumentParser(description='Family Size Distribution of tags which were aligned to regions of the reference genome')
-    parser.add_argument('--inputFile',
-                        help='Tabular File with three columns: ab or ba, tag and family size.')
+    parser.add_argument('--inputFile', help='Tabular File with three columns: ab or ba, tag and family size.')
     parser.add_argument('--inputName1')
-    parser.add_argument('--ref_genome',
-                        help='TXT File with tags of reads that overlap the region.')
-    parser.add_argument('--output_pdf', default="data.pdf", type=str,
-                       help='Name of the pdf and csv file.')
-    parser.add_argument('--output_csv', default="data.csv", type=str,
-                        help='Name of the pdf and csv file.')
-    parser.add_argument('--sep', default=",",
-                        help='Separator in the csv file.')
+    parser.add_argument('--ref_genome', help='TXT File with tags of reads that overlap the region.')
+    parser.add_argument('--output_pdf', default="data.pdf", type=str, help='Name of the pdf and tabular file.')
+    parser.add_argument('--output_tabular', default="data.tabular", type=str, help='Name of the pdf and tabular file.')
     return parser
+
 
 def compare_read_families_refGenome(argv):
     parser = make_argparser()
@@ -48,12 +47,8 @@ def compare_read_families_refGenome(argv):
     name1 = name1.split(".tabular")[0]
     refGenome = args.ref_genome
     title_file = args.output_pdf
-    title_file2 = args.output_csv
-    sep = args.sep
-
-    if type(sep) is not str or len(sep) > 1:
-        print("Error: --sep must be a single character.")
-        exit(3)
+    title_file2 = args.output_tabular
+    sep = "\t"
 
     with open(title_file2, "w") as output_file, PdfPages(title_file) as pdf:
         data_array = readFileReferenceFree(firstFile, "\t")
@@ -105,7 +100,7 @@ def compare_read_families_refGenome(argv):
         maximumX = numpy.amax(numpy.concatenate(quantAfterRegion))
         minimumX = numpy.amin(numpy.concatenate(quantAfterRegion))
 
-        ### PLOT ###
+        # PLOT
         plt.rc('figure', figsize=(11.69, 8.27))  # A4 format
         plt.rcParams['axes.facecolor'] = "E0E0E0"  # grey background color
         plt.rcParams['xtick.labelsize'] = 14
@@ -156,7 +151,7 @@ def compare_read_families_refGenome(argv):
             plt.text(0.75, 0.05 + s, "{:,}\n".format(len(count) / 2), size=11, transform=plt.gcf().transFigure)
 
         plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
-        #plt.title(name1, fontsize=14)
+        # plt.title(name1, fontsize=14)
         plt.xlabel("Family size", fontsize=14)
         plt.ylabel("Absolute Frequency", fontsize=14)
         plt.grid(b=True, which="major", color="#424242", linestyle=":")
@@ -175,19 +170,19 @@ def compare_read_families_refGenome(argv):
         output_file.write("\n\nValues from family size distribution\n")
         output_file.write("{}".format(sep))
         for i in groupUnique:
-            output_file.write("{}{}".format(i,sep))
+            output_file.write("{}{}".format(i, sep))
         output_file.write("\n")
-        j=0
-        for fs in counts[1][0:len(counts[1])-1]:
+        j = 0
+        for fs in counts[1][0:len(counts[1]) - 1]:
             if fs == 21:
                 fs = ">20"
             else:
                 fs = "={}".format(fs)
-            output_file.write("FS{}{}".format(fs,sep))
+            output_file.write("FS{}{}".format(fs, sep))
             for n in range(len(groupUnique)):
                 output_file.write("{}{}".format(int(counts[0][n][j]), sep))
             output_file.write("\n")
-            j+=1
+            j += 1
         output_file.write("sum{}".format(sep))
         for i in counts[0]:
             output_file.write("{}{}".format(int(sum(i)), sep))
@@ -195,11 +190,12 @@ def compare_read_families_refGenome(argv):
         output_file.write("\n\nIn the plot, both family sizes of the ab and ba strands were used.\nWhereas the total numbers indicate only the single count of the tags per region.\n")
         output_file.write("Region{}total nr. of tags per region\n".format(sep))
         for i, count in zip(groupUnique, quantAfterRegion):
-            output_file.write("{}{}{}\n".format(i,sep,len(count) / 2))
-        output_file.write("sum of tags{}{}\n".format(sep,length_regions))
+            output_file.write("{}{}{}\n".format(i, sep, len(count) / 2))
+        output_file.write("sum of tags{}{}\n".format(sep, length_regions))
 
     print("Files successfully created!")
-    #print("Files saved under {}.pdf and {}.csv in {}!".format(title_file, title_file, os.getcwd()))
+    # print("Files saved under {}.pdf and {}.csv in {}!".format(title_file, title_file, os.getcwd()))
+
 
 if __name__ == '__main__':
-  sys.exit(compare_read_families_refGenome(sys.argv))
+    sys.exit(compare_read_families_refGenome(sys.argv))

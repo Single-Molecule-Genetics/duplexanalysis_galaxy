@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # Family size distribution of DCS from various steps of the Galaxy pipeline
 #
 # Author: Monika Heinzl, Johannes-Kepler University Linz (Austria)
@@ -10,24 +9,26 @@
 # a FASTA file with tags after trimming as input (optional).
 # The program produces a plot which shows the distribution of family sizes of the DCS from the input files and
 # a CSV file with the data of the plot.
+# USAGE: python FSD before vs after_no_refF1.3_FINAL.py --inputFile_SSCS filenameSSCS --inputName1 filenameSSCS --makeDCS filenameMakeDCS --afterTrimming filenameAfterTrimming -- alignedTags filenameTagsRefGenome
+# --output_tabular outptufile_name_tabular --output_pdf outptufile_name_pdf
 
-# USAGE: python FSD before vs after_no_refF1.3_FINAL.py --inputFile_SSCS filenameSSCS --inputName1 filenameSSCS --makeDCS filenameMakeDCS --afterTrimming filenameAfterTrimming -- alignedTags filenameTagsRefGenome 
-# --sep "characterWhichSeparatesCSVFile" --output_csv outptufile_name_csv --output_pdf outptufile_name_pdf
-
-
-import numpy
-import matplotlib.pyplot as plt
-from collections import Counter
-from Bio import SeqIO
 import argparse
 import sys
-import os
+from collections import Counter
+
+import matplotlib.pyplot as plt
+import numpy
+from Bio import SeqIO
 from matplotlib.backends.backend_pdf import PdfPages
+
+plt.switch_backend('agg')
+
 
 def readFileReferenceFree(file, delim):
     with open(file, 'r') as dest_f:
         data_array = numpy.genfromtxt(dest_f, skip_header=0, delimiter=delim, comments='#', dtype='string')
         return(data_array)
+
 
 def readFasta(file):
     tag_consensus = []
@@ -38,9 +39,10 @@ def readFasta(file):
             line = record.description
             a, b = line.split(" ")
             fs1, fs2 = b.split("-")
-            fs_consensus.extend([fs1,fs2])
+            fs_consensus.extend([fs1, fs2])
     fs_consensus = numpy.array(fs_consensus).astype(int)
     return(tag_consensus, fs_consensus)
+
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Analysis of read loss in duplex sequencing data')
@@ -49,17 +51,16 @@ def make_argparser():
     parser.add_argument('--inputName1')
     parser.add_argument('--makeDCS',
                         help='FASTA File with information about tag and family size in the header.')
-    parser.add_argument('--afterTrimming',default=None,
+    parser.add_argument('--afterTrimming', default=None,
                         help='FASTA File with information about tag and family size in the header.')
-    parser.add_argument('--alignedTags',default=None,
+    parser.add_argument('--alignedTags', default=None,
                         help=' TXT file with tags aligned to the reference genome and family size.')
     parser.add_argument('--output_pdf', default="data.pdf", type=str,
-                        help='Name of the pdf and csv file.')
-    parser.add_argument('--output_csv', default="data.csv", type=str,
-                        help='Name of the pdf and csv file.')
-    parser.add_argument('--sep', default=",",
-                        help='Separator in the csv file.')
+                        help='Name of the pdf and tabular file.')
+    parser.add_argument('--output_tabular', default="data.tabular", type=str,
+                        help='Name of the pdf and tabular file.')
     return parser
+
 
 def compare_read_families_read_loss(argv):
     parser = make_argparser()
@@ -70,16 +71,12 @@ def compare_read_families_read_loss(argv):
     makeConsensus = args.makeDCS
     afterTrimming = args.afterTrimming
     ref_genome = args.alignedTags
-    title_file = args.output_csv
+    title_file = args.output_tabular
     title_file2 = args.output_pdf
-    sep = args.sep
-
-    if type(sep) is not str or len(sep)>1:
-        print("Error: --sep must be a single character.")
-        exit(4)
+    sep = "\t"
 
     with open(title_file, "w") as output_file, PdfPages(title_file2) as pdf:
-        ### PLOT ###
+        # PLOT
         plt.rc('figure', figsize=(11.69, 8.27))  # A4 format
         plt.rcParams['axes.facecolor'] = "E0E0E0"  # grey background color
         plt.rcParams['xtick.labelsize'] = 14
@@ -92,7 +89,7 @@ def compare_read_families_read_loss(argv):
         colors = []
         labels = []
 
-### data with tags of SSCS
+# data with tags of SSCS
         data_array = readFileReferenceFree(SSCS_file, "\t")
         seq = numpy.array(data_array[:, 1])
         tags = numpy.array(data_array[:, 2])
@@ -107,7 +104,7 @@ def compare_read_families_read_loss(argv):
         seqDic_ab = dict(zip(all_ab, quant_ab_sscs))
         seqDic_ba = dict(zip(all_ba, quant_ba_sscs))
 
-        ### get tags of the SSCS which form a DCS
+        # get tags of the SSCS which form a DCS
         # group large family sizes
         bigFamilies = numpy.where(quant > 20)[0]
         quant[bigFamilies] = 22
@@ -139,9 +136,9 @@ def compare_read_families_read_loss(argv):
         plt.text(0.55, 0.14, legend1, size=11, transform=plt.gcf().transFigure)
         plt.text(0.88, 0.14, legend2, size=11, transform=plt.gcf().transFigure)
 
-## data make DCS
+# data make DCS
         tag_consensus, fs_consensus = readFasta(makeConsensus)
-        ### group large family sizes in the plot of fasta files
+        # group large family sizes in the plot of fasta files
         bigFamilies = numpy.where(fs_consensus > 20)[0]
         fs_consensus[bigFamilies] = 22
         list1.append(fs_consensus)
@@ -152,7 +149,7 @@ def compare_read_families_read_loss(argv):
         plt.text(0.55, 0.11, legend3, size=11, transform=plt.gcf().transFigure)
         plt.text(0.88, 0.11, legend4, size=11, transform=plt.gcf().transFigure)
 
-### data after trimming
+# data after trimming
         if afterTrimming != str(None):
             tag_trimming, fs_trimming = readFasta(afterTrimming)
             bigFamilies = numpy.where(fs_trimming > 20)[0]
@@ -165,10 +162,10 @@ def compare_read_families_read_loss(argv):
             plt.text(0.55, 0.09, legend5, size=11, transform=plt.gcf().transFigure)
             plt.text(0.88, 0.09, legend6, size=11, transform=plt.gcf().transFigure)
 
-### data of tags aligned to reference genome
+# data of tags aligned to reference genome
         if ref_genome != str(None):
             mut_array = readFileReferenceFree(ref_genome, " ")
-            ### use only unique tags that were alignment to the reference genome
+            # use only unique tags that were alignment to the reference genome
             seq_mut, seqMut_index = numpy.unique(numpy.array(mut_array[:, 1]), return_index=True)
 
             # get family sizes
@@ -193,7 +190,6 @@ def compare_read_families_read_loss(argv):
             legend8 = "{:,}".format(length_DCS_ref)
             plt.text(0.55, 0.07, legend7, size=11, transform=plt.gcf().transFigure)
             plt.text(0.88, 0.07, legend8, size=11, transform=plt.gcf().transFigure)
-
 
         counts = plt.hist(list1, bins=range(-1, maximumX + 1), stacked=False, label=labels, color=colors,
                           align="left", alpha=1, edgecolor="black", linewidth=1)
@@ -248,60 +244,41 @@ def compare_read_families_read_loss(argv):
 
         if afterTrimming == str(None) and ref_genome == str(None):
             if afterTrimming == str(None):
-                output_file.write(
-                "{}before SSCS buidling{}after DCS building\n".format(sep, sep))
+                output_file.write("{}before SSCS buidling{}after DCS building\n".format(sep, sep))
             elif ref_genome == str(None):
-                output_file.write(
-                    "{}before SSCS building{}atfer DCS building\n".format(sep, sep))
+                output_file.write("{}before SSCS building{}atfer DCS building\n".format(sep, sep))
 
-            for fs, sscs, dcs in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])],
-                                                      counts[0][1][2:len(counts[0][1])]):
+            for fs, sscs, dcs in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])], counts[0][1][2:len(counts[0][1])]):
                 if fs == 21:
                     fs = ">20"
                 else:
                     fs = "={}".format(fs)
-                output_file.write(
-                    "FS{}{}{}{}{}\n".format(fs, sep, int(sscs), sep, int(dcs)))
-            output_file.write(
-                "sum{}{}{}{}\n".format(sep, int(sum(counts[0][0])), sep, int(sum(counts[0][1]))))
+                output_file.write("FS{}{}{}{}{}\n".format(fs, sep, int(sscs), sep, int(dcs)))
+            output_file.write("sum{}{}{}{}\n".format(sep, int(sum(counts[0][0])), sep, int(sum(counts[0][1]))))
 
         elif afterTrimming == str(None) or ref_genome == str(None):
             if afterTrimming == str(None):
-                output_file.write(
-                "{}before SSCS buidling{}after DCS building{}after alignment to reference\n".format(sep, sep, sep))
+                output_file.write("{}before SSCS buidling{}after DCS building{}after alignment to reference\n".format(sep, sep, sep))
             elif ref_genome == str(None):
-                output_file.write(
-                    "{}before SSCS building{}atfer DCS building{}after trimming\n".format(sep, sep, sep))
+                output_file.write("{}before SSCS building{}atfer DCS building{}after trimming\n".format(sep, sep, sep))
 
-            for fs, sscs, dcs, reference in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])],
-                                                      counts[0][1][2:len(counts[0][1])],counts[0][2][2:len(counts[0][2])]):
+            for fs, sscs, dcs, reference in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])], counts[0][1][2:len(counts[0][1])], counts[0][2][2:len(counts[0][2])]):
                 if fs == 21:
                     fs = ">20"
                 else:
                     fs = "={}".format(fs)
-                output_file.write(
-                    "FS{}{}{}{}{}{}{}\n".format(fs, sep, int(sscs), sep, int(dcs), sep, int(reference)))
-            output_file.write(
-                "sum{}{}{}{}{}{}\n".format(sep, int(sum(counts[0][0])), sep, int(sum(counts[0][1])), sep, int(sum(counts[0][2]))))
+                output_file.write("FS{}{}{}{}{}{}{}\n".format(fs, sep, int(sscs), sep, int(dcs), sep, int(reference)))
+            output_file.write("sum{}{}{}{}{}{}\n".format(sep, int(sum(counts[0][0])), sep, int(sum(counts[0][1])), sep, int(sum(counts[0][2]))))
 
         else:
-            output_file.write(
-                "{}before SSCS building{}after DCS building{}after trimming{}after alignment to reference\n".format(
-                    sep, sep, sep, sep))
-            for fs, sscs, dcs, trim, reference in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])],
-                                                      counts[0][1][2:len(counts[0][1])],
-                                                      counts[0][2][2:len(counts[0][2])],
-                                                      counts[0][3][2:len(counts[0][3])]):
+            output_file.write("{}before SSCS building{}after DCS building{}after trimming{}after alignment to reference\n".format(sep, sep, sep, sep))
+            for fs, sscs, dcs, trim, reference in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])], counts[0][1][2:len(counts[0][1])], counts[0][2][2:len(counts[0][2])], counts[0][3][2:len(counts[0][3])]):
                 if fs == 21:
                     fs = ">20"
                 else:
                     fs = "={}".format(fs)
-                output_file.write(
-                    "FS{}{}{}{}{}{}{}{}{}\n".format(fs, sep, int(sscs), sep, int(dcs), sep, int(trim), sep,
-                                                    int(reference)))
-            output_file.write(
-                "sum{}{}{}{}{}{}{}{}\n".format(sep, int(sum(counts[0][0])), sep, int(sum(counts[0][1])), sep,
-                                               int(sum(counts[0][2])), sep, int(sum(counts[0][3]))))
+                output_file.write("FS{}{}{}{}{}{}{}{}{}\n".format(fs, sep, int(sscs), sep, int(dcs), sep, int(trim), sep, int(reference)))
+            output_file.write("sum{}{}{}{}{}{}{}{}\n".format(sep, int(sum(counts[0][0])), sep, int(sum(counts[0][1])), sep, int(sum(counts[0][2])), sep, int(sum(counts[0][3]))))
 
         output_file.write("\n\nIn the plot, the family sizes of ab and ba strands and of both duplex tags were used.\nWhereas the total numbers indicate only the single count of the formed duplex tags.\n")
         output_file.write("total nr. of tags (unique, FS>=1){}{}\n".format(sep, len(seq_unique_FS)))
@@ -316,5 +293,6 @@ def compare_read_families_read_loss(argv):
 
         print("Files successfully created!")
 
+
 if __name__ == '__main__':
-  sys.exit(compare_read_families_read_loss(sys.argv))
+    sys.exit(compare_read_families_read_loss(sys.argv))
