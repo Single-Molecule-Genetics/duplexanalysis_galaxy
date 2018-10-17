@@ -87,47 +87,38 @@ def range2tag(argv):
             for t in range(0, len(tags)):
                 if cigar[t] != "*":
                     c_split = re.split('([A-Z])', cigar[
-                        t])  # divides cigar into int and char, e.g 124M1D123M into [124, M, 1, D, 123, M]
+                        t])
                     cigar_long = None
 
                     for i in range(1, len(c_split),
-                                   2):  # increase always by 2, so we consider always chars in array, e.g [M, D, M]
+                                   2):
                         if cigar_long is None:
                             cigar_long = np.repeat(c_split[i], c_split[
-                                i - 1])  # duplicate char of cigar nth times of int, e.g duplicate M --> 124 times
+                                i - 1])
                         else:
                             cigar_long = np.concatenate((cigar_long, np.repeat(c_split[i], c_split[i - 1])),
-                                                        axis=0)  # if there exist already some cigars, add them into an array row-wise
+                                                        axis=0)
 
-                    pos = ref_pos[t]  # position in ref genome
-                    # seq_pos = 0
-                    #    print(pos)
-                    if pos < stop_pos:  # if pos in ref genome smaller than stop pos of coordinate
-                        for j in range(0, len(cigar_long)):  # go through all cigars
-                            if pos >= stop_pos:  # stop if pos in ref genome gets larger than stop pos
+                    pos = ref_pos[t]
+                    if pos < stop_pos:
+                        for j in range(0, len(cigar_long)):
+                            if pos >= stop_pos:
                                 break
                             if cigar_long[j] in ("M", "D", "N"):
-                                pos += 1  # add always one to current pos in ref genome every time if cigar is M, D or N (BAM is 0 based)
-                                #        print(pos)
-                        if pos > start_pos:  # only if ref pos within start and stop pos
+                                pos += 1
+                        if pos > start_pos:
                             if mut_tags is None:
                                 mut_tags = np.array((tags[t]))
                             else:
                                 mut_tags = np.vstack((mut_tags, np.array(tags[t])))
                             ref_name_next.append(ref_genome_next[t])
-                            #print(ref_name_next)
 
             index = np.repeat("{}_{}".format(start_pos, stop_pos), len(mut_tags))
             ind.append(index)
             lst.append(mut_tags)
 
     else:
-        mut_tags = None
-       # for t in range(0, len(tags)):
-        #    if mut_tags is None:
         mut_tags = np.array(tags)
-           # else:
-            #    mut_tags = np.vstack((mut_tags, np.array(tags[t])))
         index = np.array(ref_genome)
         ref_name_next.append(ref_genome_next)
         ind.append(index)
