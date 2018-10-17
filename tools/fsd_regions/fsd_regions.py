@@ -56,7 +56,6 @@ def compare_read_families_refGenome(argv):
         data_array = readFileReferenceFree(firstFile, "\t")
 
         mut_array = readFileReferenceFree(refGenome, " ")
-        length_regions = len(mut_array)
         group = numpy.array(mut_array[:, 0])
         seq_mut = numpy.array(mut_array[:, 1])
         alt_group = numpy.array(mut_array[:, 2])
@@ -78,9 +77,15 @@ def compare_read_families_refGenome(argv):
             group = mut_array[seqMut_index,0]
             alt_group = mut_array[seqMut_index,2]
             mut_array = mut_array[seqMut_index,:]
+        length_regions = len(seq_mut)*2
 
         groupUnique, group_index = numpy.unique(group, return_index=True)
         groupUnique = groupUnique[numpy.argsort(group_index)]
+        groupUnique_alt = numpy.unique(alt_group)
+        groupUnique_alt = groupUnique_alt[groupUnique_alt != "="]
+        groupUnique_alt = [x for x in groupUnique_alt if x not in groupUnique]
+        all_keys = numpy.concatenate((groupUnique, groupUnique_alt))
+        
         lst_ab = []
         lst_ba = []
         for i in seq_mut:
@@ -91,7 +96,7 @@ def compare_read_families_refGenome(argv):
         quant_ba = numpy.array(lst_ba)
 
         quantAfterRegion = OrderedDict()
-        for key in groupUnique:
+        for key in all_keys:
             quantAfterRegion[key] = []
 
         for i in groupUnique:
@@ -127,6 +132,9 @@ def compare_read_families_refGenome(argv):
                             dataBA[bigFamilies] = 22
                             for el3 in dataBA:
                                 quantAfterRegion[alt].append(el3)
+                    else:
+                        for el4 in dataBA:
+                            quantAfterRegion[alt].append(el4)
 
                 index_inverse = [x for x in range(0, len(index_of_current_region)) if x not in index_alternative_refs]
                 data_BA_other = quant_ba_i[index_inverse]
@@ -140,6 +148,9 @@ def compare_read_families_refGenome(argv):
                         data_BA_other[bigFamilies_other] = 22
                         for el3 in data_BA_other:
                             quantAfterRegion[i].append(el3)
+                else:
+                    for el4 in dataBA:
+                        quantAfterRegion[i].append(el4)
 
         quantAfterRegion = quantAfterRegion.values()
         maximumX = numpy.amax(numpy.concatenate(quantAfterRegion))
@@ -157,10 +168,10 @@ def compare_read_families_refGenome(argv):
         colors = ["#6E6E6E", "#0431B4", "#5FB404", "#B40431", "#F4FA58", "#DF7401", "#81DAF5"]
 
         col = []
-        for i in range(0, len(groupUnique)):
+        for i in range(0, len(all_keys)):
             col.append(colors[i])
 
-        counts = plt.hist(quantAfterRegion, bins=range(minimumX, maximumX + 1), stacked=False, label=groupUnique,
+        counts = plt.hist(quantAfterRegion, bins=range(minimumX, maximumX + 1), stacked=False, label=all_keys,
                           align="left", alpha=1, color=col, edgecolor="black", linewidth=1)
         ticks = numpy.arange(minimumX - 1, maximumX, 1)
 
@@ -186,17 +197,18 @@ def compare_read_families_refGenome(argv):
         plt.text(0.55, 0.22, "total nr. of tags=", size=11, transform=plt.gcf().transFigure)
         plt.text(0.7, 0.22, "{:,}".format(length_regions), size=11, transform=plt.gcf().transFigure)
 
-        legend4 = '* The total numbers indicate the count of the ab and ba tags per region.\nAn equal sign ("=") is used in the column ba tags, if the counts and the region are identical to the ab tags.'
-        plt.text(0.1, 0.02, legend4, size=11, transform=plt.gcf().transFigure)
+        #  legend4 = '* The total numbers indicate the count of the ab and ba tags per region.\nAn equal sign ("=") is used in the column ba tags, if the counts and the region are identical to the ab tags.'
+        #  plt.text(0.1, 0.02, legend4, size=11, transform=plt.gcf().transFigure)
 
-        space = numpy.arange(0, len(groupUnique), 0.02)
         plt.text(0.7, 0.18, "total number of *\nab", size=11, transform=plt.gcf().transFigure)
         plt.text(0.78, 0.18, "ba tags", size=11, transform=plt.gcf().transFigure)
         lengths_array_ab = []
         lengths_array_ba = []
 
+        #space = numpy.arange(0, len(groupUnique), 0.02)
+        s = 0
         index_array = 0
-        for i, s, count in zip(groupUnique, space, quantAfterRegion):
+        for i, count in zip(groupUnique, quantAfterRegion):
             index_of_current_region = numpy.where(group == i)[0]
 
             plt.text(0.55, 0.14 - s, "{}=\n".format(i), size=11, transform=plt.gcf().transFigure)
@@ -216,14 +228,17 @@ def compare_read_families_refGenome(argv):
                     ind_alt_tags = numpy.where(alt_group_i == alt)[0]
                     name = "{:,} to {}".format(len(ind_alt_tags), alt)
                     lengths_of_alt_aligned_tags.append(name)
-                ind_alt_tags_inverse = numpy.where(alt_group_i != alt)[0]
+                ind_alt_tags_inverse = numpy.where(alt_group_i == "=")[0]
                 name_inverse = "{:,} to {}".format(len(ind_alt_tags_inverse), i)
                 lengths_of_alt_aligned_tags.append(name_inverse)
-                plt.text(0.78, 0.14 - s, "{}\n".format(", ".join(lengths_of_alt_aligned_tags)), size=10, transform=plt.gcf().transFigure)
+                s = s + (len(lengths_of_alt_aligned_tags)-1)*0.02
+                plt.text(0.78, 0.14 - s, "{}\n".format("\n".join(lengths_of_alt_aligned_tags)), size=11, transform=plt.gcf().transFigure)
+                s += 0.02
                 lengths_array_ab.append(nr_tags_ab)
-                lengths_array_ba.append(",".join(lengths_of_alt_aligned_tags))
+                lengths_array_ba.append("; ".join(lengths_of_alt_aligned_tags))
             else:
                 plt.text(0.78, 0.14 - s, "=\n", size=11,transform=plt.gcf().transFigure)
+                s += 0.02
                 lengths_array_ab.append(nr_tags_ab)
                 lengths_array_ba.append(nr_tags_ab)
             index_array += 1
@@ -247,7 +262,7 @@ def compare_read_families_refGenome(argv):
 
         output_file.write("\n\nValues from family size distribution\n")
         output_file.write("{}".format(sep))
-        for i in groupUnique:
+        for i in all_keys:
             output_file.write("{}{}".format(i, sep))
         output_file.write("\n")
         j = 0
@@ -258,21 +273,22 @@ def compare_read_families_refGenome(argv):
                 fs = "={}".format(fs)
             output_file.write("FS{}{}".format(fs, sep))
 
-            if len(groupUnique) == 1:
+            if len(all_keys) == 1:
                 output_file.write("{}{}".format(int(counts[0][j]), sep))
             else:
-                for n in range(len(groupUnique)):
+                for n in range(len(all_keys)):
                     output_file.write("{}{}".format(int(counts[0][n][j]), sep))
 
             output_file.write("\n")
             j += 1
         output_file.write("sum{}".format(sep))
-        if len(groupUnique) == 1:
+        if len(all_keys) == 1:
             output_file.write("{}{}".format(int(sum(counts[0])), sep))
         else:
             for i in counts[0]:
                 output_file.write("{}{}".format(int(sum(i)), sep))
         output_file.write("\n")
+        output_file.write('In the plot the total numbers indicate the count of the ab and ba tags per region.\nAn equal sign ("=") is used in the column ba tags, if the counts and the region are identical to the ab tags.')
         output_file.write("\n\nRegion{}total nr. of ab{}ba tags\n".format(sep, sep))
 
         for ab, ba, i in zip(lengths_array_ab, lengths_array_ba, groupUnique):
