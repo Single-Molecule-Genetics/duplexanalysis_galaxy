@@ -118,9 +118,10 @@ def range2tag(argv):
             lst.append(mut_tags)
 
     else:
-        mut_tags = np.array(tags)
-        index = np.array(ref_genome)
-        ref_name_next.append(ref_genome_next)
+        only_aligned_tags = numpy.where(ref_genome != "*" | ref_genome_next != "*")
+        mut_tags = np.array(tags[only_aligned_tags])
+        index = np.array(ref_genome[only_aligned_tags])
+        ref_name_next.append(ref_genome_next[only_aligned_tags])
         ind.append(index)
         lst.append(mut_tags)
         ref_name_next = np.concatenate((ref_name_next))
