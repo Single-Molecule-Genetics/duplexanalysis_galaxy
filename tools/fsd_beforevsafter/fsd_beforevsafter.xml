@@ -56,7 +56,7 @@ For both input files, only one file from both tools are necessary (these tools g
   >AAAAAAAAGGCAGAAGATATACGC 11-3
   CNCNGGCCCCCCGCTCCGTGCACAGACGNNGCNACTGACAA
 	
-**Dataset 4 (optional):** Finally, a TXT file with the regions and all tags that were aligned to the reference genome can be given as input. This file can be obtained by the tool "Duplex Sequencing Analysis: range2tag"::
+**Dataset 4 (optional):** Finally, a TXT file with the regions and all tags that were aligned to the reference genome can be given as input. This file can be obtained by the tool "Duplex Sequencing Analysis: range2tag":
 
  87_636   AAATCAAAGTATGAATGAAGTTGCCT
  87_636   AAATTCATAGCATTAATTTCAACGGG

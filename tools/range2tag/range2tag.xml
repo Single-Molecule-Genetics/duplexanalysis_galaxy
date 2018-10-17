@@ -10,7 +10,7 @@
     </command>
     <inputs>
         <param name="file1" type="data" format="sam" label="Dataset 1: SAM file with aligned reads." optional="false" help="SAM File with reads aligned to reference."/>
-        <param name="file2" type="data" format="txt" label="Dataset 2: TXT file with start and stop positions of regions." optional="false" help="Tab delimited TXT file with start and stop positions of regions."/>
+        <param name="file2" type="data" format="txt" label="Dataset 2: TXT file with start and stop positions of regions." optional="true" help="Tab delimited TXT file with start and stop positions of regions."/>
     </inputs>
     <outputs>
         <data name="output" format="txt" />
@@ -25,14 +25,14 @@
     <help> <![CDATA[
 **What it does**
         
-    This tool takes a SAM file and a TXT file with start and stop positions as input and prints all tags of reads that overlap with regions to user specified output file.
+    This tool takes a SAM file and an optional TXT file with start and stop positions as input and prints all tags of reads that overlap with regions to user specified output file. 
                
         
 **Input**
         
     **Dataset 1:** SAM file of aligned reads.
     
-    **Dataset 2:** Tab delimited TXT file with start and stop positions.
+    **Dataset 2 (optional):** Tab delimited TXT file with start and stop positions.
     
     +-------------+--------+
     | 90          | 633    |

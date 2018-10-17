@@ -25,7 +25,7 @@ def make_argparser():
     parser = argparse.ArgumentParser(description='Takes a SAM file, start and stop positions as input and prints all tags of reads that overlap with regions to user specified output file.')
     parser.add_argument('inputFile',
                         help='SAM file with aligned reads.')
-    parser.add_argument('rangesFile',
+    parser.add_argument('rangesFile', default=None,
                         help='TXT file with start and stop positions.')
     parser.add_argument('outputFile',
                         help='Output TXT file with tags that are within specified regions.')
@@ -35,7 +35,6 @@ def make_argparser():
 def range2tag(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
-
     inputFile = args.inputFile
     rangesFile = args.rangesFile
     outputFile = args.outputFile
@@ -44,82 +43,105 @@ def range2tag(argv):
         print("Error: Could not find '{}'".format(inputFile))
         exit(0)
 
-    if os.path.isfile(rangesFile) is False:
-        print("Error: Could not find '{}'".format(rangesFile))
-        exit(0)
+    if rangesFile != str(None):
+        with open(rangesFile, 'r') as regs:
+            range_array = np.genfromtxt(regs, skip_header=0, delimiter='\t', comments='#')
+        start_posList = range_array[:, 0].astype(int)
+        stop_posList = range_array[:, 1].astype(int)
 
-    with open(rangesFile, 'r') as regs:
-        range_array = np.genfromtxt(regs, skip_header=0, delimiter='\t', comments='#')
+        if len(start_posList) == 0:
+            print("Error: start_positions is empty")
+            exit(2)
 
-    start_posList = range_array[:, 0].astype(int)
-    stop_posList = range_array[:, 1].astype(int)
+        if len(stop_posList) == 0:
+            print("Error: end_positions is empty")
+            exit(3)
 
-    if len(start_posList) == 0:
-        print("Error: start_positions is empty")
-        exit(2)
-
-    if len(stop_posList) == 0:
-        print("Error: end_positions is empty")
-        exit(3)
-
-    if len(start_posList) != len(stop_posList):
-        print("start_positions and end_positions do not have the same length")
-        exit(3)
+        if len(start_posList) != len(stop_posList):
+            print("start_positions and end_positions do not have the same length")
+            exit(3)
 
     with open(inputFile, 'r') as sam:
         data_array = np.genfromtxt(sam, skip_header=0, delimiter='\t', usecols=range(11), comments='#', dtype='string')
 
     tags = np.array(data_array[:, 0])
+    print(len(tags))
+    if re.search('_', tags[0]):
+        tags = [re.split('_', x)[0] for x in tags]
     ref_pos = np.array(data_array[:, 3]).astype(int)
     cigar = np.array(data_array[:, 5])
+    ref_genome = np.array(data_array[:, 2]).astype(str)
+    ref_genome_next = np.array(data_array[:, 6]).astype(str)
 
     lst = []
     ind = []
-    start_posList = np.array(start_posList).astype(int)
-    stop_posList = np.array(stop_posList).astype(int)
+    ref_name_next = []
+    if rangesFile != str(None):
+        start_posList = np.array(start_posList).astype(int)
+        stop_posList = np.array(stop_posList).astype(int)
 
-    for start_pos, stop_pos in zip(start_posList, stop_posList):
-        start_pos = start_pos - 3
-        stop_pos = stop_pos + 3
-        mut_tags = None
-        for t in range(0, len(tags)):
-            if cigar[t] != "*":
-                c_split = re.split('([A-Z])', cigar[t])
-                cigar_long = None
+        for start_pos, stop_pos in zip(start_posList, stop_posList):
+            start_pos = start_pos - 3
+            stop_pos = stop_pos + 3
+            mut_tags = None
+            for t in range(0, len(tags)):
+                if cigar[t] != "*":
+                    c_split = re.split('([A-Z])', cigar[
+                        t])  # divides cigar into int and char, e.g 124M1D123M into [124, M, 1, D, 123, M]
+                    cigar_long = None
 
-                for i in range(1, len(c_split), 2):
-                    if cigar_long is None:
-                        cigar_long = np.repeat(c_split[i], c_split[i - 1])
-                    else:
-                        cigar_long = np.concatenate((cigar_long, np.repeat(c_split[i], c_split[i - 1])), axis=0)
-
-                pos = ref_pos[t]
-                # seq_pos = 0
-                #    print(pos)
-                if pos < stop_pos:
-                    for j in range(0, len(cigar_long)):
-                        if pos >= stop_pos:
-                            break
-                        if cigar_long[j] in ("M", "D", "N"):
-                            pos += 1
-                            #        print(pos)
-                    if pos > start_pos:
-                        if mut_tags is None:
-                            mut_tags = np.array((tags[t]))
+                    for i in range(1, len(c_split),
+                                   2):  # increase always by 2, so we consider always chars in array, e.g [M, D, M]
+                        if cigar_long is None:
+                            cigar_long = np.repeat(c_split[i], c_split[
+                                i - 1])  # duplicate char of cigar nth times of int, e.g duplicate M --> 124 times
                         else:
-                            mut_tags = np.vstack((mut_tags, np.array(tags[t])))
+                            cigar_long = np.concatenate((cigar_long, np.repeat(c_split[i], c_split[i - 1])),
+                                                        axis=0)  # if there exist already some cigars, add them into an array row-wise
 
-        index = np.repeat("{}_{}".format(start_pos, stop_pos), len(mut_tags))
+                    pos = ref_pos[t]  # position in ref genome
+                    # seq_pos = 0
+                    #    print(pos)
+                    if pos < stop_pos:  # if pos in ref genome smaller than stop pos of coordinate
+                        for j in range(0, len(cigar_long)):  # go through all cigars
+                            if pos >= stop_pos:  # stop if pos in ref genome gets larger than stop pos
+                                break
+                            if cigar_long[j] in ("M", "D", "N"):
+                                pos += 1  # add always one to current pos in ref genome every time if cigar is M, D or N (BAM is 0 based)
+                                #        print(pos)
+                        if pos > start_pos:  # only if ref pos within start and stop pos
+                            if mut_tags is None:
+                                mut_tags = np.array((tags[t]))
+                            else:
+                                mut_tags = np.vstack((mut_tags, np.array(tags[t])))
+                            ref_name_next.append(ref_genome_next[t])
+                            #print(ref_name_next)
+
+            index = np.repeat("{}_{}".format(start_pos, stop_pos), len(mut_tags))
+            ind.append(index)
+            lst.append(mut_tags)
+
+    else:
+        mut_tags = None
+       # for t in range(0, len(tags)):
+        #    if mut_tags is None:
+        mut_tags = np.array(tags)
+           # else:
+            #    mut_tags = np.vstack((mut_tags, np.array(tags[t])))
+        index = np.array(ref_genome)
+        ref_name_next.append(ref_genome_next)
         ind.append(index)
         lst.append(mut_tags)
+        ref_name_next = np.concatenate((ref_name_next))
 
     index = np.concatenate((ind))
     tags = np.concatenate((lst))
-    mut_tags = np.column_stack((index, tags))
-
+    mut_tags = np.column_stack((index, tags, ref_name_next))
     np.savetxt(outputFile, mut_tags, fmt="%s")
+    print(len(mut_tags))
     print("File saved under {} in {}!".format(outputFile, os.getcwd()))
 
 
 if __name__ == '__main__':
     sys.exit(range2tag(sys.argv))
+
