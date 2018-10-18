@@ -26,7 +26,7 @@ def make_argparser():
     parser.add_argument('inputFile',
                         help='SAM file with aligned reads.')
     parser.add_argument('rangesFile', default=None,
-                        help='TXT file with start and stop positions.')
+                        help='BED file with cromosome, start and stop positions.')
     parser.add_argument('outputFile',
                         help='Output TXT file with tags that are within specified regions.')
     return parser
@@ -46,8 +46,8 @@ def range2tag(argv):
     if rangesFile != str(None):
         with open(rangesFile, 'r') as regs:
             range_array = np.genfromtxt(regs, skip_header=0, delimiter='\t', comments='#')
-        start_posList = range_array[:, 0].astype(int)
-        stop_posList = range_array[:, 1].astype(int)
+        start_posList = range_array[:, 1].astype(int)
+        stop_posList = range_array[:, 2].astype(int)
 
         if len(start_posList) == 0:
             print("Error: start_positions is empty")
