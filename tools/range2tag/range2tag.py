@@ -45,17 +45,24 @@ def range2tag(argv):
 
     if rangesFile != str(None):
         with open(rangesFile, 'r') as regs:
-            range_array = np.genfromtxt(regs, skip_header=0, delimiter='\t', comments='#')
-        start_posList = range_array[:, 1].astype(int)
-        stop_posList = range_array[:, 2].astype(int)
+            range_array = np.genfromtxt(regs, skip_header=0, delimiter='\t', comments='#', dtype='string')
+        print(range_array.ndim)
 
-        if len(start_posList) == 0:
-            print("Error: start_positions is empty")
+        if range_array.ndim == 0:
+            print("Error: file has 0 lines")
             exit(2)
 
-        if len(stop_posList) == 0:
-            print("Error: end_positions is empty")
-            exit(3)
+        if range_array.ndim == 1:
+            chrList = range_array[0]
+            start_posList = range_array[1].astype(int)
+            stop_posList = range_array[2].astype(int)
+            chrList = [chrList.tolist()]
+            start_posList = [start_posList.tolist()]
+            stop_posList = [stop_posList.tolist()]        
+        else:
+            chrList = range_array[:, 0]
+            start_posList = range_array[:, 1].astype(int)
+            stop_posList = range_array[:, 2].astype(int)
 
         if len(start_posList) != len(stop_posList):
             print("start_positions and end_positions do not have the same length")
@@ -69,66 +76,77 @@ def range2tag(argv):
     if re.search('_', tags[0]):
         tags = [re.split('_', x)[0] for x in tags]
     ref_pos = np.array(data_array[:, 3]).astype(int)
-    cigar = np.array(data_array[:, 5])
-    ref_genome = np.array(data_array[:, 2]).astype(str)
-    ref_genome_next = np.array(data_array[:, 6]).astype(str)
+    cigar = np.array(data_array[:, 5]).astype(str)
+    ref_chr = np.array(data_array[:, 2]).astype(str)
+    # ref_chr_next = np.array(data_array[:, 6]).astype(str)
 
     lst = []
     ind = []
-    ref_name_next = []
+    # ref_name_next = []
     if rangesFile != str(None):
+        chrList = np.array(chrList)
         start_posList = np.array(start_posList).astype(int)
         stop_posList = np.array(stop_posList).astype(int)
 
-        for start_pos, stop_pos in zip(start_posList, stop_posList):
+        for chr, start_pos, stop_pos in zip(chrList, start_posList, stop_posList):
             start_pos = start_pos - 3
             stop_pos = stop_pos + 3
             mut_tags = None
             for t in range(0, len(tags)):
                 if cigar[t] != "*":
-                    c_split = re.split('([A-Z])', cigar[
-                        t])
-                    cigar_long = None
+                    if ref_chr[t] == chr:
+                        c_split = re.split('([A-Z])', cigar[
+                            t])
+                        cigar_long = None
 
-                    for i in range(1, len(c_split),
-                                   2):
-                        if cigar_long is None:
-                            cigar_long = np.repeat(c_split[i], c_split[
-                                i - 1])
-                        else:
-                            cigar_long = np.concatenate((cigar_long, np.repeat(c_split[i], c_split[i - 1])),
-                                                        axis=0)
-
-                    pos = ref_pos[t]
-                    if pos < stop_pos:
-                        for j in range(0, len(cigar_long)):
-                            if pos >= stop_pos:
-                                break
-                            if cigar_long[j] in ("M", "D", "N"):
-                                pos += 1
-                        if pos > start_pos:
-                            if mut_tags is None:
-                                mut_tags = np.array((tags[t]))
+                        for i in range(1, len(c_split),
+                                       2):
+                            if cigar_long is None:
+                                cigar_long = np.repeat(c_split[i], c_split[
+                                    i - 1])
                             else:
-                                mut_tags = np.vstack((mut_tags, np.array(tags[t])))
-                            ref_name_next.append(ref_genome_next[t])
+                                cigar_long = np.concatenate((cigar_long, np.repeat(c_split[i], c_split[i - 1])),
+                                                            axis=0)
 
-            index = np.repeat("{}_{}".format(start_pos, stop_pos), len(mut_tags))
-            ind.append(index)
-            lst.append(mut_tags)
-
+                        pos = ref_pos[t]
+                        if pos < stop_pos:
+                            for j in range(0, len(cigar_long)):
+                                if pos >= stop_pos:
+                                    break
+                                if cigar_long[j] in ("M", "D", "N"):
+                                    pos += 1
+                            if pos > start_pos:
+                                if mut_tags is None:
+                                    mut_tags = np.array((tags[t]))
+                                else:
+                                    mut_tags = np.vstack((mut_tags, np.array(tags[t])))
+                                # ref_name_next.append(ref_chr_next[t])
+            if mut_tags is not None:
+                index = np.repeat("{}_{}_{}".format(chr, start_pos+3, stop_pos-3), mut_tags.size)
+                ind.append(index)
+                if mut_tags.size == 1:
+                    lst.append(np.vstack([mut_tags.tolist()]))
+                else:
+                    lst.append(mut_tags)
+            else:
+                print("No tags found in region {}_{}_{}!".format(chr, start_pos+3, stop_pos-3))
     else:
-        only_aligned_tags = np.where((ref_genome != "*") | (ref_genome_next != "*"))[0]
+        tags = np.array(tags)[np.where((cigar != "*"))[0]]
+        ref_chr = np.array(ref_chr)[np.where((cigar != "*"))[0]]
+        # ref_chr_next = np.array(ref_chr_next)[np.where((cigar != "*"))[0]]
+        
+        # only_aligned_tags = np.where((ref_chr != "*") | (ref_chr_next != "*"))[0]
+        only_aligned_tags = np.where(ref_chr != "*")[0]
         mut_tags = np.array(np.array(tags)[only_aligned_tags])
-        index = np.array(np.array(ref_genome)[only_aligned_tags])
-        ref_name_next.append(np.array(ref_genome_next)[only_aligned_tags])
+        index = np.array(np.array(ref_chr)[only_aligned_tags])
+        # ref_name_next.append(np.array(ref_chr_next)[only_aligned_tags])
         ind.append(index)
         lst.append(mut_tags)
-        ref_name_next = np.concatenate((ref_name_next))
-
+        # ref_name_next = np.concatenate((ref_name_next))
     index = np.concatenate((ind))
     tags = np.concatenate((lst))
-    mut_tags = np.column_stack((index, tags, ref_name_next))
+    # mut_tags = np.column_stack((index, tags, ref_name_next))
+    mut_tags = np.column_stack((index, tags))
     np.savetxt(outputFile, mut_tags, fmt="%s")
     print(len(mut_tags))
     print("File saved under {} in {}!".format(outputFile, os.getcwd()))

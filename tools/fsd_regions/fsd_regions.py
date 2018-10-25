@@ -58,7 +58,6 @@ def compare_read_families_refGenome(argv):
         mut_array = readFileReferenceFree(refGenome, " ")
         group = numpy.array(mut_array[:, 0])
         seq_mut = numpy.array(mut_array[:, 1])
-        alt_group = numpy.array(mut_array[:, 2])
 
         seq = numpy.array(data_array[:, 1])
         tags = numpy.array(data_array[:, 2])
@@ -72,20 +71,15 @@ def compare_read_families_refGenome(argv):
         seqDic_ab = dict(zip(all_ab, quant_ab))
         seqDic_ba = dict(zip(all_ba, quant_ba))
 
-        if re.search('^(\d)+_(\d)+', str(mut_array[0,0])) is None:
+        if re.search('_(\d)+_(\d)+$', str(mut_array[0,0])) is None:
             seq_mut, seqMut_index = numpy.unique(numpy.array(mut_array[:, 1]), return_index=True)
             group = mut_array[seqMut_index,0]
-            alt_group = mut_array[seqMut_index,2]
             mut_array = mut_array[seqMut_index,:]
         length_regions = len(seq_mut)*2
 
         groupUnique, group_index = numpy.unique(group, return_index=True)
         groupUnique = groupUnique[numpy.argsort(group_index)]
-        groupUnique_alt = numpy.unique(alt_group)
-        groupUnique_alt = groupUnique_alt[groupUnique_alt != "="]
-        groupUnique_alt = [x for x in groupUnique_alt if x not in groupUnique]
-        all_keys = numpy.concatenate((groupUnique, groupUnique_alt))
-        
+
         lst_ab = []
         lst_ba = []
         for i in seq_mut:
@@ -95,64 +89,19 @@ def compare_read_families_refGenome(argv):
         quant_ab = numpy.array(lst_ab)
         quant_ba = numpy.array(lst_ba)
 
-        quantAfterRegion = OrderedDict()
-        for key in all_keys:
-            quantAfterRegion[key] = []
+        quantAfterRegion = []
 
         for i in groupUnique:
-            index_of_current_region = numpy.where(group == i)[0]
-            quant_ba_i = quant_ba[index_of_current_region]
-            alt_group_i = alt_group[index_of_current_region]
-            index_alternative_refs = numpy.where(alt_group_i != "=")[0]
-
-            dataAB = quant_ab[index_of_current_region]
+            dataAB = quant_ab[numpy.where(group == i)[0]]
+            dataBA = quant_ba[numpy.where(group == i)[0]]
             bigFamilies = numpy.where(dataAB > 20)[0]
             dataAB[bigFamilies] = 22
-            for el in dataAB:
-                quantAfterRegion[i].append(el)
+            bigFamilies = numpy.where(dataBA > 20)[0]
+            dataBA[bigFamilies] = 22
 
-            if len(index_alternative_refs) == 0:
-                dataBA = quant_ba_i
-                bigFamilies = numpy.where(dataBA > 20)[0]
-                dataBA[bigFamilies] = 22
-                for el2 in dataBA:
-                    quantAfterRegion[i].append(el2)
-            else:  # get tags where 2nd mate is aligned to a different ref genome
-                unique_alt = numpy.unique(alt_group_i[index_alternative_refs])
-                for alt in unique_alt:
-                    ind_alt_tags = numpy.where(alt_group_i == alt)[0]
-                    dataBA = quant_ba_i[ind_alt_tags]
+            quantAll = numpy.concatenate((dataAB, dataBA))
+            quantAfterRegion.append(quantAll)
 
-                    bigFamilies = numpy.where(dataBA > 20)[0]
-                    if len(bigFamilies) != 0:
-                        if len(bigFamilies) == 1 and type(dataBA) != list:
-                            dataBA = 22
-                            quantAfterRegion[alt].append(dataBA)
-                        else:
-                            dataBA[bigFamilies] = 22
-                            for el3 in dataBA:
-                                quantAfterRegion[alt].append(el3)
-                    else:
-                        for el4 in dataBA:
-                            quantAfterRegion[alt].append(el4)
-
-                index_inverse = [x for x in range(0, len(index_of_current_region)) if x not in index_alternative_refs]
-                data_BA_other = quant_ba_i[index_inverse]
-                bigFamilies_other = numpy.where(data_BA_other > 20)[0]
-
-                if len(bigFamilies_other) != 0:
-                    if len(bigFamilies_other) == 1 and type(data_BA_other) != list:
-                        data_BA_other = 22
-                        quantAfterRegion[i].append(data_BA_other)
-                    else:
-                        data_BA_other[bigFamilies_other] = 22
-                        for el3 in data_BA_other:
-                            quantAfterRegion[i].append(el3)
-                else:
-                    for el4 in dataBA:
-                        quantAfterRegion[i].append(el4)
-
-        quantAfterRegion = quantAfterRegion.values()
         maximumX = numpy.amax(numpy.concatenate(quantAfterRegion))
         minimumX = numpy.amin(numpy.concatenate(quantAfterRegion))
 
@@ -168,10 +117,10 @@ def compare_read_families_refGenome(argv):
         colors = ["#6E6E6E", "#0431B4", "#5FB404", "#B40431", "#F4FA58", "#DF7401", "#81DAF5"]
 
         col = []
-        for i in range(0, len(all_keys)):
+        for i in range(0, len(groupUnique)):
             col.append(colors[i])
 
-        counts = plt.hist(quantAfterRegion, bins=range(minimumX, maximumX + 1), stacked=False, label=all_keys,
+        counts = plt.hist(quantAfterRegion, bins=range(minimumX, maximumX + 1), stacked=False, label=groupUnique,
                           align="left", alpha=1, color=col, edgecolor="black", linewidth=1)
         ticks = numpy.arange(minimumX - 1, maximumX, 1)
 
@@ -195,53 +144,24 @@ def compare_read_families_refGenome(argv):
         plt.text(0.45, 0.15, legend, size=11, transform=plt.gcf().transFigure)
 
         plt.text(0.55, 0.22, "total nr. of tags=", size=11, transform=plt.gcf().transFigure)
-        plt.text(0.7, 0.22, "{:,}".format(length_regions), size=11, transform=plt.gcf().transFigure)
+        plt.text(0.75, 0.22, "{:,} ({:,})".format(length_regions, length_regions/2), size=11, transform=plt.gcf().transFigure)
 
         #  legend4 = '* The total numbers indicate the count of the ab and ba tags per region.\nAn equal sign ("=") is used in the column ba tags, if the counts and the region are identical to the ab tags.'
         #  plt.text(0.1, 0.02, legend4, size=11, transform=plt.gcf().transFigure)
 
-        plt.text(0.7, 0.18, "total number of *\nab", size=11, transform=plt.gcf().transFigure)
-        plt.text(0.78, 0.18, "ba tags", size=11, transform=plt.gcf().transFigure)
-        lengths_array_ab = []
-        lengths_array_ba = []
-
+        plt.text(0.75, 0.18, "total nr. of tags per region", size=11, transform=plt.gcf().transFigure)
         #space = numpy.arange(0, len(groupUnique), 0.02)
         s = 0
         index_array = 0
         for i, count in zip(groupUnique, quantAfterRegion):
             index_of_current_region = numpy.where(group == i)[0]
-
             plt.text(0.55, 0.14 - s, "{}=\n".format(i), size=11, transform=plt.gcf().transFigure)
-            if re.search('^(\d)+_(\d)+', str(mut_array[0, 0])) is None:
+            if re.search('_(\d)+_(\d)+$', str(mut_array[0, 0])) is None:
                 nr_tags_ab = len(numpy.unique(mut_array[index_of_current_region, 1]))
             else:
                 nr_tags_ab = len(mut_array[index_of_current_region, 1])
-
-            plt.text(0.7, 0.14 - s, "{:,}\n".format(nr_tags_ab), size=11, transform=plt.gcf().transFigure)
-
-            alt_group_i = alt_group[index_of_current_region]
-            alternative = numpy.where(alt_group_i != "=")[0]
-            unique_alt = numpy.unique(alt_group_i[alternative])
-            lengths_of_alt_aligned_tags = []
-            if len(alternative) != 0:
-                for alt in unique_alt:
-                    ind_alt_tags = numpy.where(alt_group_i == alt)[0]
-                    name = "{:,} to {}".format(len(ind_alt_tags), alt)
-                    lengths_of_alt_aligned_tags.append(name)
-                ind_alt_tags_inverse = numpy.where(alt_group_i == "=")[0]
-                name_inverse = "{:,} to {}".format(len(ind_alt_tags_inverse), i)
-                lengths_of_alt_aligned_tags.append(name_inverse)
-                s = s + (len(lengths_of_alt_aligned_tags)-1)*0.02
-                plt.text(0.78, 0.14 - s, "{}\n".format("\n".join(lengths_of_alt_aligned_tags)), size=11, transform=plt.gcf().transFigure)
-                s += 0.02
-                lengths_array_ab.append(nr_tags_ab)
-                lengths_array_ba.append("; ".join(lengths_of_alt_aligned_tags))
-            else:
-                plt.text(0.78, 0.14 - s, "=\n", size=11,transform=plt.gcf().transFigure)
-                s += 0.02
-                lengths_array_ab.append(nr_tags_ab)
-                lengths_array_ba.append(nr_tags_ab)
-            index_array += 1
+            plt.text(0.75, 0.14 - s, "{:,}\n".format(nr_tags_ab), size=11, transform=plt.gcf().transFigure)
+            s = s + 0.02
 
         plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
         plt.xlabel("Family size", fontsize=14)
@@ -258,11 +178,11 @@ def compare_read_families_refGenome(argv):
         output_file.write("absolute frequency:{}{}{}{}\n".format(sep, count[len(count) - 1], sep, count2[len(count2) - 1]))
         output_file.write("relative frequency:{}{:.3f}{}{:.3f}\n\n".format(sep, float(count[len(count) - 1]) / sum(count), sep, float(count2[len(count2) - 1]) / sum(count2)))
         output_file.write("total nr. of reads{}{}\n".format(sep, sum(numpy.array(data_array[:, 0]).astype(int))))
-        output_file.write("total nr. of tags{}{}\n".format(sep, length_regions))
+        output_file.write("total nr. of tags{}{} ({})\n".format(sep, length_regions, length_regions/2))
 
         output_file.write("\n\nValues from family size distribution\n")
         output_file.write("{}".format(sep))
-        for i in all_keys:
+        for i in groupUnique:
             output_file.write("{}{}".format(i, sep))
         output_file.write("\n")
         j = 0
@@ -273,27 +193,26 @@ def compare_read_families_refGenome(argv):
                 fs = "={}".format(fs)
             output_file.write("FS{}{}".format(fs, sep))
 
-            if len(all_keys) == 1:
+            if len(groupUnique) == 1:
                 output_file.write("{}{}".format(int(counts[0][j]), sep))
             else:
-                for n in range(len(all_keys)):
+                for n in range(len(groupUnique)):
                     output_file.write("{}{}".format(int(counts[0][n][j]), sep))
 
             output_file.write("\n")
             j += 1
         output_file.write("sum{}".format(sep))
-        if len(all_keys) == 1:
+        if len(groupUnique) == 1:
             output_file.write("{}{}".format(int(sum(counts[0])), sep))
         else:
             for i in counts[0]:
                 output_file.write("{}{}".format(int(sum(i)), sep))
         output_file.write("\n")
-        output_file.write('In the plot the total numbers indicate the count of the ab and ba tags per region.\nAn equal sign ("=") is used in the column ba tags, if the counts and the region are identical to the ab tags.')
-        output_file.write("\n\nRegion{}total nr. of ab{}ba tags\n".format(sep, sep))
+        output_file.write("\n\nIn the plot, both family sizes of the ab and ba strands were used.\nWhereas the total numbers indicate only the count of the tags per region.\n")
+        output_file.write("\n\nRegion{}total nr. of tags per region\n".format(sep, sep))
 
-        for ab, ba, i in zip(lengths_array_ab, lengths_array_ba, groupUnique):
-            output_file.write("{}{}{}{}{}\n".format(i, sep, ab, sep, ba))
-
+        for i, count in zip(groupUnique, quantAfterRegion):
+            output_file.write("{}{}{}\n".format(i,sep,len(count) / 2))
     print("Files successfully created!")
 
 

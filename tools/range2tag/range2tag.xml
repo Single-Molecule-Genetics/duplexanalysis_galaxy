@@ -45,15 +45,15 @@
     
 **Output**
         
-    The output is a blank delimited TXT file of tags of all reads that overlap the user-specified regions with start_stop or all reads that were aligned to the reference sequence(s) in the first column, the tag in the second column and the reference name of the mate in the last column. An equal sign ("=") is used, if the start and stop position of the region or the name of the reference sequence is identical to the first column.
+    The output is a blank delimited TXT file of tags of all reads that overlap the user-specified regions with start_stop or all reads that were aligned to the reference sequence(s) in the first column and the tag in the second column.
     
-    +-----------+------------------------------+-----+
-    | 87_636    | AAATCAAAGTATGAATGAAGTTGCCT   | =   |
-    +-----------+------------------------------+-----+
-    | 87_636    | AAATTCATAGCATTAATTTCAACGGG   | =   |
-    +-----------+------------------------------+-----+
-    | 656_1143  | GGGGCAGCCATATTGGCAATTATCAT   | =   |
-    +-----------+------------------------------+-----+
+    +-------------------+------------------------------+
+    | ACH_TDII_90_633   | AAATCAAAGTATGAATGAAGTTGCCT   |
+    +-------------------+------------------------------+
+    | ACH_TDII_659_1140 | AAATTCATAGCATTAATTTCAACGGG   |
+    +-------------------+------------------------------+
+    | ACH_TDII_659_1140 | GGGGCAGCCATATTGGCAATTATCAT   |
+    +-------------------+------------------------------+
         
 **About Author**
         
