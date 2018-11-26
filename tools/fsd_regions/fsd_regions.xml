@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="fsd_regions" name="Duplex Sequencing Analysis: fsd_regions" version="1.0.1">
-    <description>Family size distribution (FSD) of user-specified regions in the reference genome</description>
+<tool id="fsd_regions" name="FSD regions" version="1.0.1">
+    <description>:Family size distribution (FSD) of user-specified regions in the reference genome</description>
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4.0">matplotlib</requirement>
@@ -35,7 +35,7 @@ This tool will create a distribution of family sizes of all tags, which were ali
         
 **Input**
         
-**Dataset 1:** This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands. 
+**Dataset 1:** This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands::
 
     1  AAAAAAAAAAAATGTTGGAATCTT ba
    10  AAAAAAAAAAAGGCGGTCCACCCC ab
@@ -43,7 +43,7 @@ This tool will create a distribution of family sizes of all tags, which were ali
     
 **Dataset 2:** BAM file of the aligned reads. This file can be obtained by the tool "Map with BWA-MEM".
 
-**Dataset 3 (optional):** BED file with start and stop positions of the regions. If it is not provided, then all aligned reads of the BAM file are used in the distribution of family sizes. 
+**Dataset 3 (optional):** BED file with start and stop positions of the regions. If it is not provided, then all aligned reads of the BAM file are used in the distribution of family sizes::
 
    ACH_TDII   90    633
    ACH_TDII  659   1140
