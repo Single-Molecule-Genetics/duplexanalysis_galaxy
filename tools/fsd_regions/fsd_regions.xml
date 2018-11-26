@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="fsd_regions" name="Duplex Sequencing Analysis: fsd_regions" version="1.0.0">
+<tool id="fsd_regions" name="Duplex Sequencing Analysis: fsd_regions" version="1.0.1">
     <description>Family size distribution (FSD) of user-specified regions in the reference genome</description>
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
