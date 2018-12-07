@@ -201,8 +201,8 @@ def compare_read_families_refGenome(argv):
             .format(max(map(int, quant_ba)), count2[len(count2) - 1], float(count2[len(count2) - 1]) / sum(count2))
         plt.text(0.45, 0.1475, legend, size=11, transform=plt.gcf().transFigure)
 
-        plt.text(0.55, 0.2125, "total nr. of tags:", size=11, transform=plt.gcf().transFigure)
-        plt.text(0.8, 0.2125, "{:,} ({:,})".format(length_regions, length_regions / 2), size=11,
+        plt.text(0.53, 0.2125, "total nr. of tags:", size=11, transform=plt.gcf().transFigure)
+        plt.text(0.85, 0.2125, "{:,} ({:,})".format(length_regions, length_regions / 2), size=11,
                  transform=plt.gcf().transFigure)
 
         legend4 = "* In the plot, both family sizes of the ab and ba strands were used.\nWhereas the total numbers indicate only the single count of the tags per region.\n"
@@ -210,8 +210,8 @@ def compare_read_families_refGenome(argv):
 
         space = 0
         for i, count in zip(group, quantAfterRegion):
-            plt.text(0.55, 0.15 - space, "{}:\n".format(i), size=11, transform=plt.gcf().transFigure)
-            plt.text(0.8, 0.15 - space, "{:,}\n".format(len(count) / 2), size=11, transform=plt.gcf().transFigure)
+            plt.text(0.53, 0.15 - space, "{}:\n".format(i), size=11, transform=plt.gcf().transFigure)
+            plt.text(0.85, 0.15 - space, "{:,}\n".format(len(count) / 2), size=11, transform=plt.gcf().transFigure)
             space = space + 0.02
 
         plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
