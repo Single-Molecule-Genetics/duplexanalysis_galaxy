@@ -76,11 +76,15 @@ def plotFSDwithHD2(familySizeList1, maximumXFS, minimumXFS, originalCounts,
         plt.ylim((0, max(numpy.bincount(numpy.concatenate(familySizeList1))) * 1.1))
 
     plt.ylim((0, maximumY * 1.2))
-    legend = "\nmax. family size: \nabsolute frequency: \nrelative frequency: "
+    legend = "\nfamily size: \nabsolute frequency: \nrelative frequency: "
     plt.text(0.15, -0.08, legend, size=12, transform=plt.gcf().transFigure)
 
     count = numpy.bincount(originalCounts)  # original counts
-    legend1 = "{}\n{}\n{:.5f}".format(max(originalCounts), count[len(count) - 1], float(count[len(count) - 1]) / sum(count))
+    if max(originalCounts) >= 20:
+        max_count = ">= 20"
+    else:
+        max_count = max(originalCounts)
+    legend1 = "{}\n{}\n{:.5f}".format(max_count, count[len(count) - 1], float(count[len(count) - 1]) / sum(count))
     plt.text(0.5, -0.08, legend1, size=12, transform=plt.gcf().transFigure)
     legend3 = "singletons\n{:,}\n{:.5f}".format(int(counts[0][len(counts[0]) - 1][1]), float(counts[0][len(counts[0]) - 1][1]) / sum(counts[0][len(counts[0]) - 1]))
     plt.text(0.7, -0.08, legend3, transform=plt.gcf().transFigure, size=12)
@@ -959,13 +963,13 @@ def Hamming_Distance_Analysis(argv):
                        "Family size distribution separated by Hamming distance", sep,
                        diff=False)
 
-        count = numpy.bincount(quant)
         # output_file.write("{}{}\n".format(sep, name1))
         output_file.write("\n")
-        output_file.write("max. family size:{}{}\n".format(sep, max(quant)))
-        output_file.write("absolute frequency:{}{}\n".format(sep, count[len(count) - 1]))
+        max_fs = numpy.bincount(integers[result])
+        output_file.write("max. family size in sample:{}{}\n".format(sep, max(integers[result])))
+        output_file.write("absolute frequency:{}{}\n".format(sep, max_fs[len(max_fs) - 1]))
         output_file.write(
-            "relative frequency:{}{}\n\n".format(sep, float(count[len(count) - 1]) / sum(count)))
+            "relative frequency:{}{}\n\n".format(sep, float(max_fs[len(max_fs) - 1]) / sum(max_fs)))
 
         # HD within tags
         output_file.write(
