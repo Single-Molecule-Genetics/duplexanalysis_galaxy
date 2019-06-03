@@ -7,7 +7,7 @@
     </requirements>
     <command>
         python2 '$__tool_directory__/hd.py' --inputFile '$inputFile' --inputName1 '$inputFile.name' --sample_size $sampleSize --subset_tag $subsetTag --nproc $nproc $onlyDCS --minFS $minFS --maxFS $maxFS
-		$nr_above_bars --output_pdf $output_pdf --output_tabular $output_tabular
+		$nr_above_bars --output_pdf $output_pdf --output_tabular $output_tabular --output_chimeras_tabular $output_chimeras_tabular
     </command>
     <inputs>
         <param name="inputFile" type="data" format="tabular" label="Dataset 1: input tags" optional="false" help="Input in tabular format with the family size, tag and the direction of the strand ('ab' or 'ba') for each family."/>
@@ -21,75 +21,98 @@
  
     </inputs>
     <outputs>
-        <data name="output_tabular" format="tabular"/>
         <data name="output_pdf" format="pdf" />
+        <data name="output_tabular" format="tabular"/>
+        <data name="output_chimeras_tabular" format="tabular"/>
+		
     </outputs>
     <tests>
         <test>
-            <param name="inputFile" value="Test_data.tabular"/>
+            <param name="inputFile" value="hd_data.tab"/>
             <param name="sampleSize" value="0"/>
-            <output name="output_pdf" file="output_file.pdf" lines_diff="6"/>
-            <output name="output_tabular" file="output_file.tabular"/>
+            <output name="output_pdf" file="hd_output.pdf" lines_diff="6"/>
+            <output name="output_tabular" file="hd_output.tab"/>
+            <output name="output_chimeras_tabular" file="hd_output_chimeras.tab"/>
         </test>
     </tests>
     <help> <![CDATA[
 **What it does**
-    
-This tool calculates the Hamming distance for the tags by comparing them to all tags in the dataset and finally searches for the minimum Hamming distance. 
-The Hamming distance is shown in a histogram separated by the family sizes or in a family size distribution separated by the Hamming distances. 
-This similarity measure was calculated for each tag to distinguish whether similar tags truly stem from different molecules or occured due to sequencing or PCR errros. 
-In addition, the tags of chimeric reads can be identified by calculating the Hamming distance for each half of the tag. 
-This analysis can be performed on only a sample (by default: sample size=1000) or on the whole dataset (sample size=0). 
-It is also possible to select on only those tags, which have a partner tag (ab and ba) in the dataset (DCSs) or to filter the dataset after the tag's family size. 
-    
+
+Tags used in Duplex Sequencing (DS) are randomized 12-mers. Since each DNA fragment is labeled by two tags at each end there are theoretically 4 to the power of (12+12) unique combinations. However, the input DNA in a typical DS experiment contains only ~1,000,000 molecules creating a large tag-to-input excess (4^24 ≫ 1,000,000). Because of such excess it is, theoretically, highly unlikely to observe distinct input DNA molecules tagged by barcodes that are highly similar to each other.  
+
+This tool allows to see if there are tags highly similar to each other. It uses `Hamming distance <https://en.wikipedia.org/wiki/Hamming_distance>`_ as a measure of similarity. In this context the Hamming distance is simply the number of differences between two tags. 
+
 **Input**
-    
+
 This tools expects a tabular file with the tags of all families, their sizes and information about forward (ab) and reverse (ba) strands::
-    
-    1  AAAAAAAAAAAATGTTGGAATCTT ba
-   10  AAAAAAAAAAAGGCGGTCCACCCC ab
-   28  AAAAAAAAAAATGGTATGGACCGA ab
+
+  1  AAAAAAAAAAAATGTTGGAATCTT ba
+ 10  AAAAAAAAAAAGGCGGTCCACCCC ab
+ 28  AAAAAAAAAAATGGTATGGACCGA ab
+
+.. class:: infomark
 
 **How to generate the input**
 
 The first step of the `Du Novo Analysis Pipeline <https://doi.org/10.1186/s13059-016-1039-4>`_ is the **Make Families** tool that produces output in this form::
 
-    1                        2  3     4
-    ------------------------------------------------------
-    AAAAAAAAAAAAAAATAGCTCGAT ba read1 CGCTACGTGACTGGGTCATG
-    AAAAAAAAAAAAAAATAGCTCGAT ba read2 CGCTACGTGACTGGGTCATG
-    AAAAAAAAAAAAAAATAGCTCGAT ba read3 CGCTACGTGACTGGGTCATG
+ 1                        2  3     4
+ ------------------------------------------------------
+ AAAAAAAAAAAAAAATAGCTCGAT ba read1 CGCTACGTGACTGGGTCATG
+ AAAAAAAAAAAAAAATAGCTCGAT ba read2 CGCTACGTGACTGGGTCATG
+ AAAAAAAAAAAAAAATAGCTCGAT ba read3 CGCTACGTGACTGGGTCATG
 
-   we only need columns 1 and 2. These two columns can be extracted from this dataset using **Cut** tool::
+we only need columns 1 and 2. These two columns can be extracted from this dataset using **Cut** tool::
 
-    1                        2 
-    ---------------------------
-    AAAAAAAAAAAAAAATAGCTCGAT ba
-    AAAAAAAAAAAAAAATAGCTCGAT ba
-    AAAAAAAAAAAAAAATAGCTCGAT ba
+ 1                        2 
+ ---------------------------
+ AAAAAAAAAAAAAAATAGCTCGAT ba
+ AAAAAAAAAAAAAAATAGCTCGAT ba
+ AAAAAAAAAAAAAAATAGCTCGAT ba
 
-   now one needs to count the number of unique occurencies of each tag. This is done using **Unique lines** tool, which would add an additional column containg counts (column 1)::
+now one needs to count the number of unique occurencies of each tag. This is done using **Unique lines** tool, which would add an additional column containg counts (column 1)::
 
 
-    1 2                        3 
-    -----------------------------
-    3 AAAAAAAAAAAAAAATAGCTCGAT ba
+ 1 2                        3 
+ -----------------------------
+ 3 AAAAAAAAAAAAAAATAGCTCGAT ba
  
-   these data can now be used in this tool.
-    
+these data can now be used in this tool.
     
 **Output**
-    
-The output is one PDF file with the plots of the Hamming distance and a tabular file with the data of the plot for each dataset.
-    
-    
+
+The output is one PDF file with the plots of the Hamming distance, a tabular file with the data of the plot for each dataset and a tabular file with the chimeric tags. The PDF file contains several panles:
+
+ 1. This first page contains a graph representing the Hamming distance stratified by their family sizes.
+ 2. The second page contains the same informations as the first page but it is plotted the other way around: a family size distribution which is stratified by the Hamming distance.
+ 3. The third page contains the **first step** of the **chimera analysis**: HDs of the individual parts of the tags and their sums. First the tags are splitted into two halves (notated as a and b in the graph) and the minimum HD for part a (=HD a) is calculated. In the next step the data is subsetted by selecting only those tags that showed the minimum HD in half a. The HD of the second half is then calculated by comparing the b halves of the sample to the subset of halves from one step before and look for the maximum HD (=HD b'). Finally, the same approach is repeated but starts this time with the calculation of the minimum HD of part b (=HD b) followed by the calculation of the maximum HD of part a (=HD a') to identify all possible chimeras in the dataset. 
+ 4. The fourth page contains the **second step** of the **chimera analysis**: the absolute difference between the partial HDs (=delta HD). The HD of a chimeric reads is normally very different between its halves and therefore, the difference (=absolute delta) between those HDs should be very large, which would make it possible to identify chimeras from true molecules. To get a more accurate number of chimeric tags in the later steps, the maximum difference will be selected since the calculation of the HDs of the parts was performed twice for each tag in the third step.
+ 5. The fifth page contains the **third step** of the **chimera analysis**: the relative differences of the partial HDs (=relative delta HD). Since it is not known whether the absolute difference originates due to a low and a very large HD in both halves or one half is completely identical (HD=0) to a second molecule, the relative difference is calculated by dividing the absolute difference by the HD of the whole tag (=sum of the partial HDs). The plot can be interpreted as the following: 
+
+    - Low relative differences indicate that the total HD is almost equal split up into partial HDs. This case would be expected, if all tags originate from different molecules.
+    - Higher relative differences occur either due to low total HDs and/or larger absolute differences, both things that indicate that 2 tags were originally the same tag.
+    - A relative difference of 1 means that one part of the tags is identical. Since it is very unlikely that by chance two different tags have a HD of 0 between one of their parts, the HDs in the other part are probably artificially introduced (chimeric reads).
+
+ 6. The last page contains a graph representing the **HD of the chimeric tags** which is at the same time the HD of the non-identical halves of the tags with a relative difference of 1 from the previous page.
+
+ .. class:: infomark
+
+**Note:** 
+It is possible that both halves of a chimera show a HD of 0 from two different tags. This means that their halves are identical to two different tags in one part of the tag and therefore, they show different HDs in the second part of the tag. In such a case the maximum HD will be selected in the plots but they are notated as the following example in the output file containing the chimeric tags (the identical part of the tag is marked with an asterix):
+
+    e.g. AAAAAAAAAAAT ATTCACCCTTGT	
+
+    ***AAAAAAAAAAAT*** ATCATAGACTCT and AAAAAAAAAAAA ***ATTCACCCTTGT***
+
+ 
+   
 **About Author**
     
-    Author: Monika Heinzl
+Author: Monika Heinzl
     
-    Department: Institute of Bioinformatics, Johannes Kepler University Linz, Austria
+Department: Institute of Bioinformatics, Johannes Kepler University Linz, Austria
     
-    Contact: monika.heinzl@edumail.at
+Contact: monika.heinzl@edumail.at
     
    ]]> 
     

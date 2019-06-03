@@ -1,6 +1,0 @@
-categories: [Graphics]
-description: Tool that calculates the Hamming distances of the tags and plots them as a histogram
-long_description: Tool that calculates the Hamming distances of the tags and plots them as a histogram
-name: hd 
-owner: mheinzl
-remote_repository_url: https://github.com/monikaheinzl/duplexanalysis/tree/master/tools/hd
