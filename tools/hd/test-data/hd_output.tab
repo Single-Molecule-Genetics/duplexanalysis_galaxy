@@ -1,5 +1,6 @@
 hd_data.tab
-number of tags per file	20 (from 20) against 20
+nr of tags	20
+sample size	20
 
 Hamming distance separated by family size
 	FS=1	FS=2	FS=3	FS=4	FS=5-10	FS>10	sum	
@@ -29,10 +30,11 @@ For the second half of the tag, we compared them against all tags which resulted
 Finally, it was possible to calculate the absolute and relative differences between the HDs (absolute and relative delta HD).
 These calculations were repeated, but starting with the second half in the first step to find all possible chimeras in the data (HD b and HD  For simplicity we used the maximum value between the delta values in the end.
 When only tags that can form DCS were allowed in the analysis, family sizes for the forward and reverse (ab and ba) will be included in the plots.
-length of one part of the tag = 12
+
+length of one half of the tag	12
 
 Hamming distance of each half in the tag
-	HD a	HD b'	HD b	HD a'	HD a+b	sum	
+	HD DCS	HD b'	HD b	HD a'	HD a+b', a'+b	sum	
 HD=0	20	0	8	1	0	29	
 HD=1	0	0	1	19	8	28	
 HD=2	0	0	0	0	1	1	
@@ -46,7 +48,7 @@ HD=11	0	7	0	0	7	14
 HD=12	0	7	0	0	7	14	
 sum	20	20	20	20	40	120	
 
-Absolute delta Hamming distances within the tag
+Absolute delta Hamming distance within the tag
 	FS=1	FS=2	FS=3	FS=4	FS=5-10	FS>10	sum	
 diff=7	1	0	0	0	0	0	1	
 diff=8	1	0	0	0	1	0	2	
@@ -56,15 +58,14 @@ diff=11	4	0	1	1	1	0	7
 diff=12	5	1	0	1	0	0	7	
 sum	14	1	1	2	2	0	20	
 
-Chimera analysis: relative delta Hamming distances
+Chimera analysis: relative delta Hamming distance
 	FS=1	FS=2	FS=3	FS=4	FS=5-10	FS>10	sum	
 diff=1.0	14	1	1	2	2	0	20	
 sum	14	1	1	2	2	0	20	
 
-Chimeras:
 All tags were filtered: only those tags where at least one half was identical (HD=0) and therefore, had a relative delta of 1 were kept. These tags are considered as chimeric.
 So the Hamming distances of the chimeric tags are shown.
-Hamming distances of chimeras
+Hamming distance of chimeric families separated after FS
 	FS=1	FS=2	FS=3	FS=4	FS=5-10	FS>10	sum	
 HD=7	1	0	0	0	0	0	1	
 HD=8	1	0	0	0	1	0	2	
@@ -73,5 +74,15 @@ HD=10	2	0	0	0	0	0	2
 HD=11	4	0	1	1	1	0	7	
 HD=12	5	1	0	1	0	0	7	
 sum	14	1	1	2	2	0	20	
+
+Hamming distance of chimeric families separated after DCS and single SSCS
+	DCS	SSCS ab	SSCS ba	sum	
+HD=7.0	0	0	1	1	
+HD=8.0	0	1	1	2	
+HD=9.0	0	1	0	1	
+HD=10.0	0	1	1	2	
+HD=11.0	0	3	4	7	
+HD=12.0	0	2	5	7	
+sum	0	8	12	20	
 
 

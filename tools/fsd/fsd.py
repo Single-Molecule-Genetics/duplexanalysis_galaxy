@@ -282,9 +282,12 @@ def compare_read_families(argv):
                 ticks1[len(ticks1) - 1] = ">20"
 
             if to_plot[l] == "Relative frequencies":
-                counts_rel = ax.hist(list_to_plot2, bins=numpy.arange(minimumX, maximumX + 2), stacked=False, edgecolor="black", linewidth=1, label=label, align="left", alpha=0.6, rwidth=0.8, density=True, color=colors)
+                w = [numpy.zeros_like(data) + 1. / len(data) for data in list_to_plot2]
+                counts_rel = ax.hist(list_to_plot2, weights=w,
+                                     bins=numpy.arange(1, 23), stacked=False, edgecolor="black",
+                                     linewidth=1, label=label, align="left", alpha=0.7, rwidth=0.8)
             else:
-                counts = ax.hist(list_to_plot2, bins=numpy.arange(minimumX, maximumX + 2), stacked=False, edgecolor="black", linewidth=1, label=label, align="left", alpha=0.6, rwidth=0.8, color=colors)
+                counts = ax.hist(list_to_plot2, bins=numpy.arange(minimumX, maximumX + 2), stacked=False, edgecolor="black", linewidth=1, label=label, align="left", alpha=0.7, rwidth=0.8, color=colors)
                 ax.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(0.9, 1))
 
             ax.set_xticks(numpy.array(ticks))
@@ -338,14 +341,14 @@ def compare_read_families(argv):
                     w = 1./(len(list_to_plot) + 1)
 
                 if to_plot[l] == "Relative frequencies":
-                    new_y = list(numpy.concatenate((numpy.array([yi / float(numpy.sum(y)) for yi in y]))))
-                    counts2_rel = ax.bar(x, new_y, align="edge", width=w,
-                                         edgecolor="black", label=label[i],linewidth=1, alpha=0.6, color=colors[i])
+                    counts2_rel = ax.bar(x, list(numpy.float_(y)) / numpy.sum(y), align="edge", width=w,
+                                         edgecolor="black", label=label[i],linewidth=1, alpha=0.7, color=colors[i])
                     
                 else:
                     y = list(y.reshape((len(y))))
+                    
                     counts2 = ax.bar(x, y, align="edge", width=w, edgecolor="black", label=label[i], linewidth=1,
-                                     alpha=0.6, color=colors[i])
+                                     alpha=0.7, color=colors[i])
                 if i == len(list_to_plot2):
                     barWidth += 1. / (len(list_to_plot) + 1) + 1. / (len(list_to_plot) + 1)
                 else:

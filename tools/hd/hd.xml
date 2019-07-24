@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool id="hd" name="HD:" version="1.0.0">
+<tool id="hd" name="HD:" version="1.0.1">
     <description>hamming distance analysis of duplex tags</description>
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
         <requirement type="package" version="1.4.0">matplotlib</requirement>
     </requirements>
     <command>
-        python2 '$__tool_directory__/hd.py' --inputFile '$inputFile' --inputName1 '$inputFile.name' --sample_size $sampleSize --subset_tag $subsetTag --nproc $nproc $onlyDCS --minFS $minFS --maxFS $maxFS
+        python2 '$__tool_directory__/hd.py' --inputFile '$inputFile' --inputName1 '$inputFile.name' --sample_size $sampleSize --subset_tag $subsetTag --nproc $nproc $onlyDCS $rel_freq --minFS $minFS --maxFS $maxFS
 		$nr_above_bars --output_pdf $output_pdf --output_tabular $output_tabular --output_chimeras_tabular $output_chimeras_tabular
     </command>
     <inputs>
@@ -15,6 +15,7 @@
         <param name="minFS" type="integer" label="minimum family size of the tags" min="1" value="1" help="filters the tags after their family size: Families with a smaller size are skipped. Default: min. family size = 1."/>
         <param name="maxFS" type="integer" label="max family size of the tags" min="0" value="0" help="filters the tags after their family size: Families with a larger size are skipped. If max. family size is 0, no upper bound is defined and the maximum family size in the analysis will be the maximum family size of the whole dataset. Default: max. family size = 0."/>
         <param name="onlyDCS" type="boolean" label="only DCS in the analysis?" truevalue="" falsevalue="--only_DCS" checked="False" help="Only tags, which have a partner tag (ab and ba) in the dataset, are included in the analysis."/>
+        <param name="rel_freq" type="boolean" label="relative frequency?" truevalue="" falsevalue="--rel_freq" checked="False" help="If True, the relative frequencies instead of the absolute values are displayed in the plots."/>
         <param name="subsetTag" type="integer" label="shorten tag in the analysis?" value="0" help="By this parameter an analysis with shorter tag length is simulated. If this parameter is 0 (by default), the tags with its original length are used in the analysis."/>
         <param name="nproc" type="integer" label="number of processors" value="8" help="Number of processor used for computing."/>
         <param name="nr_above_bars" type="boolean" label="include numbers above bars?" truevalue="--nr_above_bars" falsevalue="" checked="True" help="The absolute and relative values of the data can be included or removed from the plots. "/>
@@ -93,7 +94,9 @@ The output is one PDF file with the plots of the Hamming distance, a tabular fil
     - Higher relative differences occur either due to low total HDs and/or larger absolute differences, both things that indicate that 2 tags were originally the same tag.
     - A relative difference of 1 means that one part of the tags is identical. Since it is very unlikely that by chance two different tags have a HD of 0 between one of their parts, the HDs in the other part are probably artificially introduced (chimeric reads).
 
- 6. The last page contains a graph representing the **HD of the chimeric tags** which is at the same time the HD of the non-identical halves of the tags with a relative difference of 1 from the previous page.
+ 6. The last page contains a graph representing the **HD of the chimeric tags** which is at the same time the HD of the non-identical halves of the chimeric tags with a relative difference of 1 from the previous page.
+
+ 7. The last page is only generated when the parameter "only DCS in the analysis?" is **False**. The graph represents the **HD of the chimeric tags** which is at the same time the HD of the non-identical halves of the chimeric tags and indicates if they can form a DCS or not.
 
  .. class:: infomark
 
