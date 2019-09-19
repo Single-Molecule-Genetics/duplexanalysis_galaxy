@@ -1,4 +1,4 @@
-chimera tag	family size, read direction	similar tag with HD=0
+chimera tag	family size, read direction	similar tag with TD=0
 AAAAAAAAAAAA AACCAAAACTTC	1 ba	*AAAAAAAAAAAA* TCTTTCTTTGAG 2 ab
 AAAAAAAAAAAA ACCAGGCGTCGA	1 ba	*AAAAAAAAAAAA* AACCAAAACTTC 1 ba, *AAAAAAAAAAAA* AGCTCCACGTTG 1 ba, *AAAAAAAAAAAA* CAGTGTTGAGAC 1 ba, *AAAAAAAAAAAA* TCTTTCTTTGAG 2 ab, *AAAAAAAAAAAA* TTGGGTTCCTTA 1 ab
 AAAAAAAAAAAA ATCGTGGTTTGT	1 ba	*AAAAAAAAAAAA* CAGTGTTGAGAC 1 ba, AAAAAAAAAAAG *ATCGTGGTTTGT* 4 ba
@@ -14,7 +14,7 @@ AAAAAAAAAAAT ATTCGAAAGTTA	1 ba	*AAAAAAAAAAAT* ATCATAGACTCT 1 ab, *AAAAAAAAAAAT* 
 This file contains all tags that were identified as chimeras as the first column and the corresponding tags which returned a Hamming distance of zero in either the first or the second half of the sample tag as the second column.
 The tags were separated by an empty space into their halves and the * marks the identical half.
 
-Statistics of nr. of tags that returned max. HD (2nd column)
+Statistics of nr. of tags that returned max. TD (2nd column)
 minimum	1	tag(s)
 mean	2.08333333333	tag(s)
 median	2.0	tag(s)

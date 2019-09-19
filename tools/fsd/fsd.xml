@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- galaxy version 16.04 -->
-<tool id="fsd" name="FSD" version="1.0.1">
+<tool id="fsd" name="FSD" version="1.0.8">
     <description>: Family Size Distribution of duplex sequencing tags</description>
     <requirements>
         <requirement type="package" version="2.7">python</requirement>
@@ -10,7 +10,7 @@
     <command>
         python2 '$__tool_directory__/fsd.py' --inputFile1 '${file1}' --inputName1 '${file1.name}' 
 --inputFile2 '${file2}' --inputName2 '${file2.name}' --inputFile3 '${file3}' --inputName3 '${file3.name}' 
---inputFile4 '${file4}' --inputName4 '${file4.name}' $log_axis --output_pdf $output_pdf --output_tabular $output_tabular 
+--inputFile4 '${file4}' --inputName4 '${file4.name}' $log_axis $rel_freq --output_pdf $output_pdf --output_tabular $output_tabular 
     </command>
     <inputs>
         <param name="file1" type="data" format="tabular" label="Dataset 1: input tags" optional="false"/>
@@ -18,7 +18,7 @@
         <param name="file3" type="data" format="tabular" label="Dataset 3: input tags" optional="true" />
         <param name="file4" type="data" format="tabular" label="Dataset 4: input tags" optional="true"  help="Input in tabular format with the family size, tags and the direction of the strand ('ab' or 'ba') for each family. Name of the files can have max. 34 charcters!"/>
         <param name="log_axis" type="boolean" label="log scale for y axis?" truevalue="" falsevalue="--log_axis" checked="False" help="Transform y axis in log scale."/>
-		
+        <param name="rel_freq" type="boolean" label="relative frequency?" truevalue="" falsevalue="--rel_freq" checked="False" help="If True, the relative frequencies instead of the absolute values are displayed in the plots."/>
     </inputs>
     <outputs>
         <data name="output_pdf" format="pdf" />

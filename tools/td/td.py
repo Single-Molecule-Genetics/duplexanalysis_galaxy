@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Hamming distance analysis of SSCSs
+# Tag distance analysis of SSCSs
 #
 # Author: Monika Heinzl, Johannes-Kepler University Linz (Austria)
 # Contact: monika.heinzl@edumail.at
@@ -13,7 +13,7 @@
 # data of the plots. It is also possible to perform the HD analysis with shortened tags with given sizes as input.
 # The tool can run on a certain number of processors, which can be defined by the user.
 
-# USAGE: python hd.py --inputFile filename --inputName1 filename --sample_size int /
+# USAGE: python td.py --inputFile filename --inputName1 filename --sample_size int /
 #        --only_DCS True --FamilySize3 True --subset_tag True --nproc int --minFS int --maxFS int
 #        --nr_above_bars True/False --output_tabular outptufile_name_tabular
 
@@ -38,7 +38,7 @@ def plotFSDwithHD2(familySizeList1, maximumXFS, minimumXFS, originalCounts,
                    subtitle, pdf, relative=False, diff=True, rel_freq=False):
     if diff is False:
         colors = ["#e6194b", "#3cb44b", "#ffe119", "#0082c8", "#f58231", "#911eb4"]
-        labels = ["HD=1", "HD=2", "HD=3", "HD=4", "HD=5-8", "HD>8"]
+        labels = ["TD=1", "TD=2", "TD=3", "TD=4", "TD=5-8", "TD>8"]
     else:
         colors = ["#93A6AB", "#403C14", "#731E41", "#BAB591", "#085B6F", "#E8AA35", "#726C66"]
         if relative is True:
@@ -62,7 +62,7 @@ def plotFSDwithHD2(familySizeList1, maximumXFS, minimumXFS, originalCounts,
         counts = plt.hist(familySizeList1, label=labels, weights=w, color=colors, stacked=True,
                           rwidth=0.8, alpha=1, align="left", edgecolor="None", bins=range1)
         plt.ylabel("Relative Frequency", fontsize=14)
-        plt.ylim((0, (float(maximumY) / sum(p1)) * 1.1))
+        plt.ylim((0, 1.07))
     else:
         counts = plt.hist(familySizeList1, label=labels, color=colors, stacked=True,
                           rwidth=0.8, alpha=1, align="left", edgecolor="None", bins=range1)
@@ -119,7 +119,7 @@ def plotHDwithFSD(list1, maximumX, minimumX, subtitle, lenTags, pdf, xlabel, rel
                           label=["FS=1", "FS=2", "FS=3", "FS=4", "FS=5-10", "FS>10"], rwidth=0.8,
                           color=["#808080", "#FFFFCC", "#FFBF00", "#DF0101", "#0431B4", "#86B404"],
                           stacked=True, alpha=1, align="left", range=(0, maximumX + 1))
-        plt.ylim((0, (float(maximumY) / sum(p1)) * 1.2))
+        plt.ylim((0, 1.07))
         plt.ylabel("Relative Frequency", fontsize=14)
         bins = counts[1]  # width of bins
         counts = numpy.array(map(float, counts[0][5]))
@@ -190,7 +190,7 @@ def plotHDwithDCS(list1, maximumX, minimumX, subtitle, lenTags, pdf, xlabel, rel
         counts = plt.hist(list1, bins=bin1, edgecolor='black', linewidth=1, weights=w,
                           label=["DCS", "ab", "ba"], rwidth=0.8, color=["#FF0000", "#5FB404", "#FFBF00"],
                           stacked=True, alpha=1, align="left", range=(0, maximumX + 1))
-        plt.ylim((0, (float(maximumY) / sum(p1)) * 1.2))
+        plt.ylim((0, 1.07))
         plt.ylabel("Relative Frequency", fontsize=14)
         bins = counts[1]  # width of bins
         counts = numpy.array(map(float, counts[0][2]))
@@ -240,7 +240,10 @@ def plotHDwithDCS(list1, maximumX, minimumX, subtitle, lenTags, pdf, xlabel, rel
             lenTags, len_sample, len(numpy.concatenate(list1)))
     plt.text(0.14, -0.07, legend, size=12, transform=plt.gcf().transFigure)
 
-    legend2 = "SSCS ab = {:,}\nSSCS ba = {:,}\nDCS = {:,}".format(len(list1[1]), len(list1[2]), len(list1[0]))
+    legend2 = "SSCS ab = {:,} ({:.5f})\nSSCS ba = {:,} ({:.5f})\nDCS = {:,} ({:.5f})".format(
+        len(list1[1]), len(list1[1]) / float(nr_unique_chimeras),
+        len(list1[2]), len(list1[2]) / float(nr_unique_chimeras),
+        len(list1[0]), len(list1[0]) / float(nr_unique_chimeras))
     plt.text(0.6, -0.047, legend2, size=12, transform=plt.gcf().transFigure)
 
     pdf.savefig(fig, bbox_inches="tight")
@@ -265,21 +268,21 @@ def plotHDwithinSeq(sum1, sum1min, sum2, sum2min, min_value, lenTags, pdf, len_s
     if rel_freq:
         w = [numpy.zeros_like(data) + 1. / len(data) for data in ham_partial]
         plt.hist(ham_partial, align="left", rwidth=0.8, stacked=False, weights=w,
-                 label=["HD a", "HD b'", "HD b", "HD a'", "HD a+b', a'+b"],
+                 label=["TD a.min", "TD b.max", "TD b.min", "TD a.max", "TD a.min + b.max,\nTD a.max + b.min"],
                  bins=range1, color=["#58ACFA", "#0404B4", "#FE642E", "#B40431", "#585858"],
                  edgecolor='black', linewidth=1)
         plt.ylabel("Relative Frequency", fontsize=14)
-        # plt.ylim(-0.1, (float(maximumY) / len(numpy.concatenate(ham_partial))) * 1.2)
+        plt.ylim(0, 1.07)
     else:
         plt.hist(ham_partial, align="left", rwidth=0.8, stacked=False,
-                 label=["HD a", "HD b'", "HD b", "HD a'", "HD a+b', a'+b"],
+                 label=["TD a.min", "TD b.max", "TD b.min", "TD a.max", "TD a.min + b.max,\nTD a.max + b.min"],
                  bins=range1, color=["#58ACFA", "#0404B4", "#FE642E", "#B40431", "#585858"],
                  edgecolor='black', linewidth=1)
         plt.ylabel("Absolute Frequency", fontsize=14)
 
-    plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.55, 1))
-    plt.suptitle('Hamming distances within tags', fontsize=14)
-    plt.xlabel("HD", fontsize=14)
+    plt.legend(loc='upper right', fontsize=14, frameon=True, bbox_to_anchor=(1.6, 1))
+    plt.suptitle('Tag distances within tags', fontsize=14)
+    plt.xlabel("TD", fontsize=14)
     plt.grid(b=True, which='major', color='#424242', linestyle=':')
     plt.xlim((minimumX - 1, maximumX + 1))
     # plt.axis((minimumX - 1, maximumX + 1, 0, maximumY * 1.2))
@@ -360,7 +363,7 @@ def createFileFSD2(summary, sumCol, overallSum, output_file, name, sep, rel=Fals
     output_file.write(name)
     output_file.write("\n")
     if diff is False:
-        output_file.write("{}HD=1{}HD=2{}HD=3{}HD=4{}HD=5-8{}HD>8{}sum{}\n".format(
+        output_file.write("{}TD=1{}TD=2{}TD=3{}TD=4{}TD=5-8{}TD>8{}sum{}\n".format(
             sep, sep, sep, sep, sep, sep, sep, sep))
     else:
         if rel is False:
@@ -480,7 +483,7 @@ def createTableHDwithTags(list1):
             state = state + 1
         sumRow = count.sum(axis=1)
         sumCol = count.sum(axis=0)
-        first = ["HD={}".format(i) for i in uniqueHD]
+        first = ["TD={}".format(i) for i in uniqueHD]
         final = numpy.column_stack((first, count, sumRow))
     return (final, sumCol)
 
@@ -518,7 +521,7 @@ def createTableHDwithDCS(list1):
             state = state + 1
         sumRow = count.sum(axis=1)
         sumCol = count.sum(axis=0)
-        first = ["HD={}".format(i) for i in uniqueHD]
+        first = ["TD={}".format(i) for i in uniqueHD]
         final = numpy.column_stack((first, count, sumRow))
     return (final, sumCol)
 
@@ -530,7 +533,7 @@ def createFileHD(summary, sumCol, overallSum, output_file, name, sep):
         sep, sep, sep, sep, sep, sep, sep, sep))
     for item in summary:
         for nr in item:
-            if "HD" not in nr and "diff" not in nr:
+            if "TD" not in nr and "diff" not in nr:
                 nr = nr.astype(float)
                 nr = nr.astype(int)
             output_file.write("{}{}".format(nr, sep))
@@ -549,7 +552,7 @@ def createFileHDwithDCS(summary, sumCol, overallSum, output_file, name, sep):
     output_file.write("{}DCS{}SSCS ab{}SSCS ba{}sum{}\n".format(sep, sep, sep, sep, sep))
     for item in summary:
         for nr in item:
-            if "HD" not in nr:
+            if "TD" not in nr:
                 nr = nr.astype(float)
                 nr = nr.astype(int)
             output_file.write("{}{}".format(nr, sep))
@@ -565,10 +568,10 @@ def createFileHDwithDCS(summary, sumCol, overallSum, output_file, name, sep):
 def createFileHDwithinTag(summary, sumCol, overallSum, output_file, name, sep):
     output_file.write(name)
     output_file.write("\n")
-    output_file.write("{}HD DCS{}HD b'{}HD b{}HD a'{}HD a+b', a'+b{}sum{}\n".format(sep, sep, sep, sep, sep, sep, sep))
+    output_file.write("{}TD a.min{}TD b.max{}TD b.min{}TD a.max{}TD a.min + b.max, TD a.max + b.min{}sum{}\n".format(sep, sep, sep, sep, sep, sep, sep))
     for item in summary:
         for nr in item:
-            if "HD" not in nr:
+            if "TD" not in nr:
                 nr = nr.astype(float)
                 nr = nr.astype(int)
             output_file.write("{}{}".format(nr, sep))
@@ -680,7 +683,7 @@ def hamming_difference(array1, array2, mate_b):
         # tags which have identical parts:
         if min_value == 0 or max_value == 0:
             min_tagsList_zeros.append(numpy.array(tag))
-            difference1_zeros = abs(min_value - max_value)  # hd of non-identical part
+            difference1_zeros = abs(min_value - max_value)  # td of non-identical part
             diff11_zeros.append(difference1_zeros)
             max_tag_list.append(numpy.array(max_tag))
         else:
@@ -842,12 +845,12 @@ def hammingDistanceWithDCS(minHD_tags_zeros, diff_zeros, data_array):
 
 
 def make_argparser():
-    parser = argparse.ArgumentParser(description='Hamming distance analysis of duplex sequencing data')
+    parser = argparse.ArgumentParser(description='Tag distance analysis of duplex sequencing data')
     parser.add_argument('--inputFile',
                         help='Tabular File with three columns: ab or ba, tag and family size.')
     parser.add_argument('--inputName1')
     parser.add_argument('--sample_size', default=1000, type=int,
-                        help='Sample size of Hamming distance analysis.')
+                        help='Sample size of Tag distance analysis.')
     parser.add_argument('--subset_tag', default=0, type=int,
                         help='The tag is shortened to the given number.')
     parser.add_argument('--nproc', default=4, type=int,
@@ -877,9 +880,6 @@ def make_argparser():
 
 
 def Hamming_Distance_Analysis(argv):
-# def Hamming_Distance_Analysis(file1, name1, index_size, title_savedFile_pdf, title_savedFile_csv,
-#                               output_chimeras_tabular, onlyDuplicates, minFS=1, maxFS=0, nr_above_bars=True,
-#                               subset=False, nproc=12, rel_freq=False):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
     file1 = args.inputFile
@@ -1080,7 +1080,7 @@ def Hamming_Distance_Analysis(argv):
         minHD_tags_zeros2 = numpy.concatenate([item[7] for item in diff_list_b])
 
         chimera_tags1 = sum([item[10] for item in diff_list_a], [])
-        chimera_tags2 = numpy.concatenate([item[10] for item in diff_list_b])
+        chimera_tags2 = sum([item[10] for item in diff_list_b], [])
 
         rel_Diff = []
         diff_zeros = []
@@ -1090,8 +1090,11 @@ def Hamming_Distance_Analysis(argv):
         for d1, d2, rel1, rel2, zeros1, zeros2, tag1, tag2, ctag1, ctag2 in \
                 zip(diff1, diff2, rel_Diff1, rel_Diff2, diff_zeros1, diff_zeros2, minHD_tags_zeros1, minHD_tags_zeros2,
                     chimera_tags1, chimera_tags2):
-            rel_Diff.append(max(rel1, rel2))
-            diff.append(max(d1, d2))
+            relatives = numpy.array([rel1, rel2])
+            absolutes = numpy.array([d1, d2])
+            max_idx = numpy.argmax(relatives)
+            rel_Diff.append(relatives[max_idx])
+            diff.append(absolutes[max_idx])
 
             if all(i is not None for i in [zeros1, zeros2]):
                 diff_zeros.append(max(zeros1, zeros2))
@@ -1120,7 +1123,7 @@ def Hamming_Distance_Analysis(argv):
         stat_maxTags = []
 
         with open(output_chimeras_tabular, "w") as output_file1:
-            output_file1.write("chimera tag\tfamily size, read direction\tsimilar tag with HD=0\n")
+            output_file1.write("chimera tag\tfamily size, read direction\tsimilar tag with TD=0\n")
             for i in range(len(data_chimeraAnalysis)):
                 tag1 = data_chimeraAnalysis[i, 0]
 
@@ -1134,7 +1137,7 @@ def Hamming_Distance_Analysis(argv):
                 sample_half_b = tag1[len(tag1) / 2:len(tag1)]
 
                 max_tags = data_chimeraAnalysis[i, 1]
-                if len(max_tags) > 1 and type(max_tags) is not numpy.ndarray:
+                if len(max_tags) > 1 and len(max_tags) != len(data_array[0, 1]) and type(max_tags) is not numpy.ndarray:
                     max_tags = numpy.concatenate(max_tags)
                 max_tags = numpy.unique(max_tags)
                 stat_maxTags.append(len(max_tags))
@@ -1167,7 +1170,7 @@ def Hamming_Distance_Analysis(argv):
                 "corresponding tags which returned a Hamming distance of zero in either the first or the second "
                 "half of the sample tag as the second column.\n"
                 "The tags were separated by an empty space into their halves and the * marks the identical half.")
-            output_file1.write("\n\nStatistics of nr. of tags that returned max. HD (2nd column)\n")
+            output_file1.write("\n\nStatistics of nr. of tags that returned max. TD (2nd column)\n")
             output_file1.write("minimum\t{}\ttag(s)\n".format(numpy.amin(numpy.array(stat_maxTags))))
             output_file1.write("mean\t{}\ttag(s)\n".format(numpy.mean(numpy.array(stat_maxTags))))
             output_file1.write("median\t{}\ttag(s)\n".format(numpy.median(numpy.array(stat_maxTags))))
@@ -1217,7 +1220,7 @@ def Hamming_Distance_Analysis(argv):
         listDifference1, maximumXDifference, minimumXDifference = hammingDistanceWithFS(lst_minHD_tags, diff)
         listRelDifference1, maximumXRelDifference, minimumXRelDifference = hammingDistanceWithFS(lst_minHD_tags,
                                                                                                  rel_Diff)
-        # chimeric read analysis: tags which have HD=0 in one of the halfs
+        # chimeric read analysis: tags which have TD=0 in one of the halfs
         if len(minHD_tags_zeros) != 0:
             lst_minHD_tags_zeros = []
             for i in minHD_tags_zeros:
@@ -1228,7 +1231,7 @@ def Hamming_Distance_Analysis(argv):
 
             # histogram with HD of non-identical half
             listDifference1_zeros, maximumXDifference_zeros, minimumXDifference_zeros = hammingDistanceWithFS(
-            lst_minHD_tags_zeros, diff_zeros)
+                lst_minHD_tags_zeros, diff_zeros)
 
             if onlyDuplicates is False:
                 listDCS_zeros, maximumXDCS_zeros, minimumXDCS_zeros = hammingDistanceWithDCS(minHD_tags_zeros,
@@ -1236,12 +1239,12 @@ def Hamming_Distance_Analysis(argv):
 
         # plot Hamming Distance with Family size distribution
         plotHDwithFSD(list1=list1, maximumX=maximumX, minimumX=minimumX, pdf=pdf, rel_freq=rel_freq,
-                      subtitle="Hamming distance separated by family size", lenTags=lenTags,
-                      xlabel="HD", nr_above_bars=nr_above_bars, len_sample=len_sample)
+                      subtitle="Tag distance separated by family size", lenTags=lenTags,
+                      xlabel="TD", nr_above_bars=nr_above_bars, len_sample=len_sample)
 
         # Plot FSD with separation after
         plotFSDwithHD2(familySizeList1, maximumXFS, minimumXFS, rel_freq=rel_freq,
-                       originalCounts=quant, subtitle="Family size distribution separated by Hamming distance",
+                       originalCounts=quant, subtitle="Family size distribution separated by Tag distance",
                        pdf=pdf, relative=False, diff=False)
 
         # Plot HD within tags
@@ -1250,31 +1253,31 @@ def Hamming_Distance_Analysis(argv):
 
         # Plot difference between HD's separated after FSD
         plotHDwithFSD(listDifference1, maximumXDifference, minimumXDifference, pdf=pdf,
-                      subtitle="Delta Hamming distance within tags", lenTags=lenTags, rel_freq=rel_freq,
-                      xlabel="absolute delta HD", relative=False, nr_above_bars=nr_above_bars, len_sample=len_sample)
+                      subtitle="Delta Tag distance within tags", lenTags=lenTags, rel_freq=rel_freq,
+                      xlabel="absolute delta TD", relative=False, nr_above_bars=nr_above_bars, len_sample=len_sample)
 
         plotHDwithFSD(listRelDifference1, maximumXRelDifference, minimumXRelDifference, pdf=pdf,
-                      subtitle="Chimera Analysis: relative delta Hamming distance", lenTags=lenTags, rel_freq=rel_freq,
-                      xlabel="relative delta HD", relative=True, nr_above_bars=nr_above_bars,
+                      subtitle="Chimera Analysis: relative delta Tag distance", lenTags=lenTags, rel_freq=rel_freq,
+                      xlabel="relative delta TD", relative=True, nr_above_bars=nr_above_bars,
                       nr_unique_chimeras=nr_chimeric_tags, len_sample=len_sample)
 
         # plots for chimeric reads
         if len(minHD_tags_zeros) != 0:
             # HD
             plotHDwithFSD(listDifference1_zeros, maximumXDifference_zeros, minimumXDifference_zeros, pdf=pdf,
-                          subtitle="Hamming distance of chimeric families (CF)", rel_freq=rel_freq,
-                          lenTags=lenTags, xlabel="HD", relative=False,
+                          subtitle="Tag distance of chimeric families (CF)", rel_freq=rel_freq,
+                          lenTags=lenTags, xlabel="TD", relative=False,
                           nr_above_bars=nr_above_bars, nr_unique_chimeras=nr_chimeric_tags, len_sample=len_sample)
 
             if onlyDuplicates is False:
                 plotHDwithDCS(listDCS_zeros, maximumXDCS_zeros, minimumXDCS_zeros, pdf=pdf,
-                              subtitle="Hamming distance of chimeric families (CF)", rel_freq=rel_freq,
-                              lenTags=lenTags, xlabel="HD", relative=False,
+                              subtitle="Tag distance of chimeric families (CF)", rel_freq=rel_freq,
+                              lenTags=lenTags, xlabel="TD", relative=False,
                               nr_above_bars=nr_above_bars, nr_unique_chimeras=nr_chimeric_tags, len_sample=len_sample)
 
         # print all data to a CSV file
         # HD
-        summary, sumCol = createTableHD(list1, "HD=")
+        summary, sumCol = createTableHD(list1, "TD=")
         overallSum = sum(sumCol)  # sum of columns in table
 
         # FSD
@@ -1296,7 +1299,7 @@ def Hamming_Distance_Analysis(argv):
         # chimeric reads
         if len(minHD_tags_zeros) != 0:
             # absolute difference and tags where at least one half has HD=0
-            summary15, sumCol15 = createTableHD(listDifference1_zeros, "HD=")
+            summary15, sumCol15 = createTableHD(listDifference1_zeros, "TD=")
             overallSum15 = sum(sumCol15)
 
             if onlyDuplicates is False:
@@ -1308,10 +1311,10 @@ def Hamming_Distance_Analysis(argv):
 
         # HD
         createFileHD(summary, sumCol, overallSum, output_file,
-                     "Hamming distance separated by family size", sep)
+                     "Tag distance separated by family size", sep)
         # FSD
         createFileFSD2(summary5, sumCol5, overallSum5, output_file,
-                       "Family size distribution separated by Hamming distance", sep,
+                       "Family size distribution separated by Tag distance", sep,
                        diff=False)
 
         # output_file.write("{}{}\n".format(sep, name1))
@@ -1324,36 +1327,35 @@ def Hamming_Distance_Analysis(argv):
 
         # HD within tags
         output_file.write(
-            "The Hamming distances were calculated by comparing the first halve against all halves and selected the "
-            "minimum value (HD a).\nFor the second half of the tag, we compared them against all tags which resulted "
-            "in the minimum HD of the previous step and selected the maximum value (HD b').\nFinally, it was possible "
-            "to calculate the absolute and relative differences between the HDs (absolute and relative delta HD).\n"
-            "These calculations were repeated, but starting with the second half in the first step to find all "
-            "possible chimeras in the data (HD b and HD  For simplicity we used the maximum value between the delta "
-            "values in the end.\nWhen only tags that can form DCS were allowed in the analysis, family sizes for the "
-            "forward and reverse (ab and ba) will be included in the plots.\n")
+            "Chimera Analysis:\nThe tags are splitted into two halves (part a and b) for which the Tag distances (TD) are calculated seperately.\n"
+            "The tag distance of the first half (part a) is calculated by comparing part a of the tag in the sample against all a parts in the dataset and by selecting the minimum value (TD a.min).\n"
+            "In the next step, we select those tags that showed the minimum TD and estimate the TD for the second half (part b) of the tag by comparing part b against the previously selected subset.\n"
+            "The maximum value represents then TD b.max. Finally, these process is repeated but starting with part b instead and TD b.min and TD a.max are calculated.\n"
+            "Next, the absolute differences between TD a.min & TD b.max and TD b.min & TD a.max are estimated (delta HD).\n"
+            "These are then divided by the sum of both parts (TD a.min + TD b.max or TD b.min + TD a.max, respectively) which give the relative differences between the partial HDs (rel. delta HD).\n"
+            "For simplicity, we used the maximum value of the relative differences and the respective delta HD.\n"
+            "Note that when only tags that can form a DCS are included in the analysis, the family sizes for both directions (ab and ba) of the strand will be included in the plots.\n")
 
         output_file.write("\nlength of one half of the tag{}{}\n\n".format(sep, len(data_array[0, 1]) / 2))
 
         createFileHDwithinTag(summary9, sumCol9, overallSum9, output_file,
-                              "Hamming distance of each half in the tag", sep)
+                              "Tag distance of each half in the tag", sep)
         createFileHD(summary11, sumCol11, overallSum11, output_file,
-                     "Absolute delta Hamming distance within the tag", sep)
+                     "Absolute delta Tag distance within the tag", sep)
 
         createFileHD(summary13, sumCol13, overallSum13, output_file,
-                     "Chimera analysis: relative delta Hamming distance", sep)
+                     "Chimera analysis: relative delta Tag distance", sep)
 
         if len(minHD_tags_zeros) != 0:
             output_file.write(
-                "All tags were filtered: only those tags where at least one half was identical (HD=0) and therefore, "
-                "had a relative delta of 1 were kept. These tags are considered as chimeric.\nSo the Hamming distances "
-                "of the chimeric tags are shown.\n")
+                "All tags are filtered and only those tags where one half is identical (TD=0) and therefore, have a relative delta TD of 1, are kept.\n"
+                "These tags are considered as chimeras.\n")
             createFileHD(summary15, sumCol15, overallSum15, output_file,
-                         "Hamming distance of chimeric families separated after FS", sep)
+                         "Tag distance of chimeric families separated after FS", sep)
 
             if onlyDuplicates is False:
                 createFileHDwithDCS(summary16, sumCol16, overallSum16, output_file,
-                                    "Hamming distance of chimeric families separated after DCS and single SSCS", sep)
+                                    "Tag distance of chimeric families separated after DCS and single SSCS (ab, ba)", sep)
 
         output_file.write("\n")
 
