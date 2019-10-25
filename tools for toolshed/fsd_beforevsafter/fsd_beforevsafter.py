@@ -13,6 +13,7 @@
 # --output_tabular outputfile_name_tabular --output_pdf outputfile_name_pdf
 
 import argparse
+import re
 import sys
 from collections import Counter
 
@@ -28,7 +29,7 @@ plt.switch_backend('agg')
 def readFileReferenceFree(file, delim):
     with open(file, 'r') as dest_f:
         data_array = numpy.genfromtxt(dest_f, skip_header=0, delimiter=delim, comments='#', dtype='string')
-        return data_array
+        return(data_array)
 
 
 def readFasta(file):
@@ -42,7 +43,7 @@ def readFasta(file):
             fs1, fs2 = b.split("-")
             fs_consensus.extend([fs1, fs2])
     fs_consensus = numpy.array(fs_consensus).astype(int)
-    return (tag_consensus, fs_consensus)
+    return(tag_consensus, fs_consensus)
 
 
 def make_argparser():
@@ -66,6 +67,7 @@ def make_argparser():
 def compare_read_families_read_loss(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
+    #
     SSCS_file = args.inputFile_SSCS
     SSCS_file_name = args.inputName1
     makeConsensus = args.makeDCS
@@ -136,7 +138,7 @@ def compare_read_families_read_loss(argv):
         plt.text(0.55, 0.14, legend1, size=11, transform=plt.gcf().transFigure)
         plt.text(0.88, 0.14, legend2, size=11, transform=plt.gcf().transFigure)
 
-        # data make DCS
+# data make DCS
         tag_consensus, fs_consensus = readFasta(makeConsensus)
         # group large family sizes in the plot of fasta files
         bigFamilies = numpy.where(fs_consensus > 20)[0]
@@ -149,8 +151,8 @@ def compare_read_families_read_loss(argv):
         plt.text(0.55, 0.11, legend3, size=11, transform=plt.gcf().transFigure)
         plt.text(0.88, 0.11, legend4, size=11, transform=plt.gcf().transFigure)
 
-        # data after trimming
-        if afterTrimming is not None:
+# data after trimming
+        if afterTrimming != str(None):
             tag_trimming, fs_trimming = readFasta(afterTrimming)
             bigFamilies = numpy.where(fs_trimming > 20)[0]
             fs_trimming[bigFamilies] = 22
@@ -162,15 +164,15 @@ def compare_read_families_read_loss(argv):
             plt.text(0.55, 0.09, legend5, size=11, transform=plt.gcf().transFigure)
             plt.text(0.88, 0.09, legend6, size=11, transform=plt.gcf().transFigure)
 
-        # data of tags aligned to reference genome
-        if ref_genome is not None:
+# data of tags aligned to reference genome
+        if ref_genome != str(None):
             pysam.index(ref_genome)
             bam = pysam.AlignmentFile(ref_genome, "rb")
             seq_mut = []
             for read in bam.fetch():
                 if not read.is_unmapped:
-                    if '_' in read.query_name:
-                        tags = read.query_name.split('_')[0]
+                    if re.search('_', read.query_name):
+                        tags = re.split('_', read.query_name)[0]
                     else:
                         tags = read.query_name
                     seq_mut.append(tags)
@@ -200,13 +202,15 @@ def compare_read_families_read_loss(argv):
             plt.text(0.55, 0.07, legend7, size=11, transform=plt.gcf().transFigure)
             plt.text(0.88, 0.07, legend8, size=11, transform=plt.gcf().transFigure)
 
-        counts = plt.hist(list1, bins=range(-1, maximumX + 1), stacked=False, label=labels, color=colors, align="left", alpha=1, edgecolor="black", linewidth=1)
+        counts = plt.hist(list1, bins=range(-1, maximumX + 1), stacked=False, label=labels, color=colors,
+                          align="left", alpha=1, edgecolor="black", linewidth=1)
         ticks = numpy.arange(0, maximumX, 1)
         ticks1 = map(str, ticks)
         ticks1[len(ticks1) - 1] = ">20"
         plt.xticks(numpy.array(ticks), ticks1)
-        if ref_genome is not None:
+        if ref_genome != str(None):
             count = numpy.array([v for k, v in sorted(Counter(quant_ab_ref).iteritems())])  # count all family sizes from all ab strands
+
             legend = "max. family size:\nabsolute frequency:\nrelative frequency:\n\ntotal nr. of reads:\n(before SSCS building)"
             plt.text(0.1, 0.085, legend, size=11, transform=plt.gcf().transFigure)
 
@@ -234,9 +238,9 @@ def compare_read_families_read_loss(argv):
         pdf.savefig(fig, bbox_inch="tight")
         plt.close()
 
-        # write information about plot into a csv file
+    # write information about plot into a csv file
         output_file.write("Dataset:{}{}\n".format(sep, SSCS_file_name))
-        if ref_genome is not None:
+        if ref_genome != str(None):
             output_file.write("{}AB{}BA\n".format(sep, sep))
             output_file.write("max. family size:{}{}{}{}\n".format(sep, max(quant_ab_ref), sep, max(quant_ba_ref)))
             output_file.write(
@@ -248,10 +252,10 @@ def compare_read_families_read_loss(argv):
         output_file.write("\ntotal nr. of reads before SSCS building{}{}\n".format(sep, sum(numpy.array(data_array[:, 0]).astype(int))))
         output_file.write("\n\nValues from family size distribution\n")
 
-        if afterTrimming is None and ref_genome is None:
-            if afterTrimming is None:
+        if afterTrimming == str(None) and ref_genome == str(None):
+            if afterTrimming == str(None):
                 output_file.write("{}before SSCS building{}after DCS building\n".format(sep, sep))
-            elif ref_genome is None:
+            elif ref_genome == str(None):
                 output_file.write("{}before SSCS building{}atfer DCS building\n".format(sep, sep))
 
             for fs, sscs, dcs in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])], counts[0][1][2:len(counts[0][1])]):
@@ -262,10 +266,10 @@ def compare_read_families_read_loss(argv):
                 output_file.write("FS{}{}{}{}{}\n".format(fs, sep, int(sscs), sep, int(dcs)))
             output_file.write("sum{}{}{}{}\n".format(sep, int(sum(counts[0][0])), sep, int(sum(counts[0][1]))))
 
-        elif afterTrimming is None or ref_genome is None:
-            if afterTrimming is None:
+        elif afterTrimming == str(None) or ref_genome == str(None):
+            if afterTrimming == str(None):
                 output_file.write("{}before SSCS building{}after DCS building{}after alignment to reference\n".format(sep, sep, sep))
-            elif ref_genome is None:
+            elif ref_genome == str(None):
                 output_file.write("{}before SSCS building{}atfer DCS building{}after trimming\n".format(sep, sep, sep))
 
             for fs, sscs, dcs, reference in zip(counts[1][2:len(counts[1])], counts[0][0][2:len(counts[0][0])], counts[0][1][2:len(counts[0][1])], counts[0][2][2:len(counts[0][2])]):
@@ -292,9 +296,9 @@ def compare_read_families_read_loss(argv):
         output_file.write("total nr. of tags (unique, FS>=3){}{}\n".format(sep, len(seq_unique_FS3)))
         output_file.write("DCS (before SSCS building, FS>=3){}{}\n".format(sep, len(d2)))
         output_file.write("after DCS building{}{}\n".format(sep, len(tag_consensus)))
-        if afterTrimming is not None:
+        if afterTrimming != str(None):
             output_file.write("after trimming{}{}\n".format(sep, len(tag_trimming)))
-        if ref_genome is not None:
+        if ref_genome != str(None):
             output_file.write("after alignment to reference{}{}\n".format(sep, length_DCS_ref))
 
         print("Files successfully created!")

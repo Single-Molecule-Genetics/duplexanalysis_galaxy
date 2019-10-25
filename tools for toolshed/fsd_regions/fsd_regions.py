@@ -31,7 +31,7 @@ plt.switch_backend('agg')
 def readFileReferenceFree(file, delim):
     with open(file, 'r') as dest_f:
         data_array = np.genfromtxt(dest_f, skip_header=0, delimiter=delim, comments='#', dtype='string')
-        return data_array
+        return(data_array)
 
 
 def make_argparser():
@@ -66,7 +66,7 @@ def compare_read_families_refGenome(argv):
         bam = pysam.AlignmentFile(bamFile, "rb")
         qname_dict = collections.OrderedDict()
 
-        if rangesFile is not None:
+        if rangesFile != str(None):
             with open(rangesFile, 'r') as regs:
                 range_array = np.genfromtxt(regs, skip_header=0, delimiter='\t', comments='#', dtype='string')
 
@@ -133,21 +133,33 @@ def compare_read_families_refGenome(argv):
         lst_ab = []
         lst_ba = []
         quantAfterRegion = []
-        length_regions = 0
         for i in group:
             lst_ab_r = []
             lst_ba_r = []
             seq_mut = qname_dict[i]
-            if rangesFile is None:
+            if rangesFile == str(None):
                 seq_mut, seqMut_index = np.unique(np.array(seq_mut), return_index=True)
-            length_regions = length_regions + len(seq_mut) * 2
             for r in seq_mut:
-                count_ab = seqDic_ab.get(r)
-                count_ba = seqDic_ba.get(r)
-                lst_ab_r.append(count_ab)
-                lst_ab.append(count_ab)
-                lst_ba_r.append(count_ba)
-                lst_ba.append(count_ba)
+                if re.search('\.', r):  # BAM file with SSCS tags
+                    splitted_tag = re.split('\.', r)[0]
+                    direction = re.split('\.', r)[1]
+
+                    if direction == "ab":
+                        count_ab = seqDic_ab.get(splitted_tag)
+                        lst_ab_r.append(count_ab)
+                        lst_ab.append(count_ab)
+
+                    else:
+                        count_ba = seqDic_ba.get(splitted_tag)
+                        lst_ba_r.append(count_ba)
+                        lst_ba.append(count_ba)
+                else:  # BAM file with DCS tags
+                    count_ab = seqDic_ab.get(r)
+                    lst_ab_r.append(count_ab)
+                    lst_ab.append(count_ab)
+                    count_ba = seqDic_ba.get(r)
+                    lst_ba_r.append(count_ba)
+                    lst_ba.append(count_ba)
 
             dataAB = np.array(lst_ab_r)
             dataBA = np.array(lst_ba_r)
@@ -161,6 +173,7 @@ def compare_read_families_refGenome(argv):
 
         quant_ab = np.array(lst_ab)
         quant_ba = np.array(lst_ba)
+        length_regions = len(np.concatenate(quantAfterRegion))
 
         maximumX = np.amax(np.concatenate(quantAfterRegion))
         minimumX = np.amin(np.concatenate(quantAfterRegion))
@@ -189,7 +202,8 @@ def compare_read_families_refGenome(argv):
         plt.xticks(np.array(ticks), ticks1)
         count = np.bincount(map(int, quant_ab))  # original counts
 
-        legend = "max. family size:\nabsolute frequency:\nrelative frequency:\n\ntotal nr. of reads:\n(before SSCS building)"
+        legend = "max. family size:\nabsolute frequency:" \
+                 "\nrelative frequency:\n\ntotal nr. of reads:\n(before SSCS building)"
         plt.text(0.15, 0.085, legend, size=11, transform=plt.gcf().transFigure)
 
         legend = "AB\n{}\n{}\n{:.5f}\n\n{:,}".format(max(map(int, quant_ab)), count[len(count) - 1], float(count[len(count) - 1]) / sum(count), sum(np.array(data_array[:, 0]).astype(int)))
@@ -201,17 +215,24 @@ def compare_read_families_refGenome(argv):
             .format(max(map(int, quant_ba)), count2[len(count2) - 1], float(count2[len(count2) - 1]) / sum(count2))
         plt.text(0.45, 0.1475, legend, size=11, transform=plt.gcf().transFigure)
 
-        plt.text(0.55, 0.2125, "total nr. of tags:", size=11, transform=plt.gcf().transFigure)
-        plt.text(0.8, 0.2125, "{:,} ({:,})".format(length_regions, length_regions / 2), size=11,
+        plt.text(0.53, 0.2125, "total nr. of tags:", size=11, transform=plt.gcf().transFigure)
+        if re.search('\.', r):  # BAM file with SSCS tags
+            plt.text(0.85, 0.2125, "{:,}".format(length_regions), size=11,
+                     transform=plt.gcf().transFigure)
+        else:
+            plt.text(0.85, 0.2125, "{:,} ({:,})".format(length_regions, length_regions / 2), size=11,
                  transform=plt.gcf().transFigure)
-
-        legend4 = "* In the plot, both family sizes of the ab and ba strands were used.\nWhereas the total numbers indicate only the single count of the tags per region.\n"
-        plt.text(0.1, 0.01, legend4, size=11, transform=plt.gcf().transFigure)
+            legend4 = "* In the plot, both family sizes of the ab and ba strands were used." \
+                      "\nWhereas the total numbers indicate only the single count of the tags per region.\n"
+            plt.text(0.1, 0.01, legend4, size=11, transform=plt.gcf().transFigure)
 
         space = 0
         for i, count in zip(group, quantAfterRegion):
-            plt.text(0.55, 0.15 - space, "{}:\n".format(i), size=11, transform=plt.gcf().transFigure)
-            plt.text(0.8, 0.15 - space, "{:,}\n".format(len(count) / 2), size=11, transform=plt.gcf().transFigure)
+            plt.text(0.53, 0.15 - space, "{}:\n".format(i), size=11, transform=plt.gcf().transFigure)
+            if re.search('\.', r):  # BAM file with SSCS tags
+                plt.text(0.85, 0.15 - space, "{:,}\n".format(len(count)), size=11, transform=plt.gcf().transFigure)
+            else:
+                plt.text(0.85, 0.15 - space, "{:,}\n".format(len(count) / 2), size=11, transform=plt.gcf().transFigure)
             space = space + 0.02
 
         plt.legend(loc='upper right', fontsize=14, bbox_to_anchor=(0.9, 1), frameon=True)
@@ -229,7 +250,10 @@ def compare_read_families_refGenome(argv):
         output_file.write("absolute frequency:{}{}{}{}\n".format(sep, count[len(count) - 1], sep, count2[len(count2) - 1]))
         output_file.write("relative frequency:{}{:.3f}{}{:.3f}\n\n".format(sep, float(count[len(count) - 1]) / sum(count), sep, float(count2[len(count2) - 1]) / sum(count2)))
         output_file.write("total nr. of reads{}{}\n".format(sep, sum(np.array(data_array[:, 0]).astype(int))))
-        output_file.write("total nr. of tags{}{} ({})\n".format(sep, length_regions, length_regions / 2))
+        if re.search('\.', r):  # BAM file with SSCS tags
+            output_file.write("total nr. of tags{}{}\n".format(sep, length_regions))
+        else:
+            output_file.write("total nr. of tags{}{} ({})\n".format(sep, length_regions, length_regions / 2))
         output_file.write("\n\nValues from family size distribution\n")
         output_file.write("{}".format(sep))
         for i in group:
@@ -258,10 +282,17 @@ def compare_read_families_refGenome(argv):
             for i in counts[0]:
                 output_file.write("{}{}".format(int(sum(i)), sep))
         output_file.write("\n")
-        output_file.write("\n\nIn the plot, both family sizes of the ab and ba strands were used.\nWhereas the total numbers indicate only the single count of the tags per region.\n")
+        if re.search('\.', r):  # BAM file with SSCS tags
+            output_file.write("\n")
+        else:
+            output_file.write("\n\nIn the plot, both family sizes of the ab and ba strands were used."
+                              "\nWhereas the total numbers indicate only the single count of the tags per region.\n")
         output_file.write("Region{}total nr. of tags per region\n".format(sep))
         for i, count in zip(group, quantAfterRegion):
-            output_file.write("{}{}{}\n".format(i, sep, len(count) / 2))
+            if re.search('\.', r):  # BAM file with SSCS tags
+                output_file.write("{}{}{}\n".format(i, sep, len(count)))
+            else:
+                output_file.write("{}{}{}\n".format(i, sep, len(count) / 2))
 
     print("Files successfully created!")
 
