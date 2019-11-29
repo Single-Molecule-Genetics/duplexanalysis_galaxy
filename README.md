@@ -14,5 +14,5 @@ This tool calculates the number of nucleotide differences among tags (tag distan
 This tools expects a tabular file with the tags of all families, the family sizes and information about forward (ab) and reverse (ba) strands, which is created by the `Make Families` or `Correct Barcodes` of the Du Novo pipeline described in [Stoler *et al.* 2016]. A detailed describtion on how to produce this file in [Galaxy](http://usegalaxy.org). 
 
 The tool can be used this tool via the command line with its default settings as the following:
-$ python2 td.py --inputFile tag_file.tabular --inputName1 tag_file.tabular --sample_size 0 --subset_tag 0 --nproc 8 --rel_freq --minFS 1 --maxFS 0 --nr_above_bars --output_pdf out_file.pdf --output_tabular out_file.tabular --output_chimeras out_file_chimeras.tabular
+`$ python2 td.py --inputFile tag_file.tabular --inputName1 tag_file.tabular --sample_size 0 --subset_tag 0 --nproc 8 --rel_freq --minFS 1 --maxFS 0 --nr_above_bars --output_pdf out_file.pdf --output_tabular out_file.tabular --output_chimeras out_file_chimeras.tabular
 
