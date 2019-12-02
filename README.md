@@ -6,7 +6,7 @@ This tools allow a deeper insight into duplex sequencing data. They can be used 
 This tools were build with Python 2.7.
 
 ## Usage
-A detailed description of all tools can be found on [Galaxy](http://usegalaxy.org) about its parameters, input and output files.
+A detailed description of all tools can be found on [Galaxy](http://usegalaxy.org) with its parameters, input and output files.
 
 ### TD: Tag distance analysis of duplex tags
 Tags used in Duplex Sequencing (DS) are randomized barcodes, e.g 12 base pairs long. Since each DNA fragment is labeled by two tags at each end there are theoretically 4 to the power of (12+12) unique combinations. However, the input DNA in a typical DS experiment contains only ~1,000,000 molecules creating a large tag-to-input excess (4^24 ≫ 1,000,000). Because of such excess it is highly unlikely to tag distinct input DNA molecules with highly similar barcodes.
