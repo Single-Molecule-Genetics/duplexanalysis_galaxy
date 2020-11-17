@@ -3,7 +3,7 @@
 This tools allow a deeper insight into duplex sequencing data. They can be used within the [Galaxy platform](http://usegalaxy.org) under the section Du Novo, on your local Galaxy installation from the [toolshed](https://toolshed.g2.bx.psu.edu/view/iuc/duplex_family_size_distribution) and on the command line. They can be used as stand-alone tools or along with the [Du Novo Analysis Pipeline](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1039-4).
 
 ## Dependencies
-This tools were build with Python 2.7.
+These tools were build with Python 2.7 but can be easily adapted to newer versions.
 
 ## Usage
 A detailed description of all tools can be found on [Galaxy](http://usegalaxy.org) with its parameters, input and output files.
