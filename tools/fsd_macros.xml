@@ -2,11 +2,19 @@
     <xml name="citation">
     <citations>
         <citation type="bibtex">
-            @misc{duplex,
-            author = {Povysil, Gundula and Heinzl, Monika and Salazar, Renato and Stoler, Nicholas and Nekrutenko, Anton and Tiemann-Boege, Irene},
-            year = {2019},
-            title = {{Variant Analyzer: a quality control for variant calling in duplex sequencing data (manuscript)}}
-         }
+            @article{10.1093/nargab/lqab002,
+                author = {Povysil, Gundula and Heinzl, Monika and Salazar, Renato and Stoler, Nicholas and Nekrutenko, Anton and Tiemann-Boege, Irene},
+                title = "{Increased yields of duplex sequencing data by a series of quality control tools}",
+                journal = {NAR Genomics and Bioinformatics},
+                volume = {3},
+                number = {1},
+                year = {2021},
+                month = {02},
+                issn = {2631-9268},
+                doi = {10.1093/nargab/lqab002},
+                url = {https://doi.org/10.1093/nargab/lqab002},
+                eprint = {https://academic.oup.com/nargab/article-pdf/3/1/lqab002/36429662/lqab002.pdf},
+            }
         </citation>
     </citations>
 </xml>
